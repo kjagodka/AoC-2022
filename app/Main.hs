@@ -9,7 +9,7 @@ import           Utils              (parseInt)
 solvedDays :: [Int]
 solvedDays = [1]
 
-solve :: Int -> String -> String
+solve :: Int -> String -> IO String
 solve 1 = Day01.solve
 solve _ = undefined
 
@@ -36,7 +36,7 @@ readInputs n = do
 runSolution :: Int -> IO ()
 runSolution n = do
  putStrLn $ "Day " ++ show n
- readInputs n >>= putStrLn . solve n
+ readInputs n >>= solve n >>= putStrLn
 
 runSolutions :: [Int] -> IO ()
 runSolutions = mapM_ runSolution

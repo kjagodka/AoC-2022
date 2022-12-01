@@ -1,10 +1,11 @@
 module Day01 (solve, main) where
 import           Data.List       (sort)
 import           Data.List.Split (splitOn)
-import           Utils           (combineParts)
+import           Utils           (combineParts, parseInt)
+import Data.Functor ((<&>))
 
-parse :: String -> [[Int]]
-parse = map (map read) . splitOn [""] . lines
+parse :: String -> IO [[Int]]
+parse = mapM (mapM parseInt) . splitOn [""] . lines
 
 part1 :: [[Int]] -> Int
 part1 = maximum . map sum
@@ -12,8 +13,8 @@ part1 = maximum . map sum
 part2 :: [[Int]] -> Int
 part2 = sum . take 3 . reverse . sort . map sum
 
-solve :: String -> String
-solve = combineParts part1 part2 . parse
+solve :: String -> IO String
+solve input = parse input <&> combineParts part1 part2
 
 main :: IO ()
-main = interact solve
+main = getContents >>= solve >>= putStrLn

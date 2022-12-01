@@ -4,12 +4,12 @@ import           Control.Monad      ((>=>))
 import qualified Day01
 import           System.Environment (getArgs)
 import           System.Exit        (exitFailure, exitSuccess)
-import           Utils              (parseInt)
+import           Utils              (parseInt, showResults)
 
 solvedDays :: [Int]
 solvedDays = [1]
 
-solve :: Int -> String -> IO String
+solve :: Int -> String -> IO (Int, Int)
 solve 1 = Day01.solve
 solve _ = undefined
 
@@ -36,7 +36,7 @@ readInputs n = do
 runSolution :: Int -> IO ()
 runSolution n = do
  putStrLn $ "Day " ++ show n
- readInputs n >>= solve n >>= putStrLn
+ readInputs n >>= solve n >>= putStrLn . showResults
 
 runSolutions :: [Int] -> IO ()
 runSolutions = mapM_ runSolution

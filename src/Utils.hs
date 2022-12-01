@@ -1,10 +1,11 @@
-module Utils ( combineParts, parseInt) where
-import           System.Exit        (exitFailure)
+module Utils ( showResults, parseInt, applyTuple ) where
+import           System.Exit (exitFailure)
 
-combineParts :: (t -> Int) -> (t -> Int) -> t -> [Char]
-combineParts part1 part2 input =
-    "Part1: " ++ show (part1 input) ++ "\nPart2: " ++ show (part2 input) ++ "\n"
+showResults :: (Int, Int) -> String
+showResults (a, b) = "Part1: " ++ show a ++ "\nPart2: " ++ show b ++ "\n"
 
+applyTuple :: (t -> a, t -> b) -> t -> (a, b)
+applyTuple (f, g) val = (f val, g val)
 
 parseInt :: String -> IO Int
 parseInt s = case reads s of

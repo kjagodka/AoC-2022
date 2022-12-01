@@ -50,6 +50,20 @@ executable AoC2022-exe
     , split
   default-language: Haskell2010
 
+executable Day01-exe
+  main-is: Day01.hs
+  other-modules:
+      Main
+      Paths_AoC2022
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -main-is Day01
+  build-depends:
+      AoC2022
+    , base >=4.7 && <5
+    , split
+  default-language: Haskell2010
+
 test-suite AoC2022-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs

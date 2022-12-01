@@ -4,11 +4,13 @@ import           System.Environment (getArgs)
 import           System.Exit        (exitFailure, exitSuccess)
 
 import           Control.Exception  (try)
+import qualified Day01
 
 solvedDays :: [Int]
-solvedDays = []
+solvedDays = [1]
 
 solve :: Int -> String -> String
+solve 1 = Day01.solve
 solve _ = undefined
 
 parse :: [String] -> IO Int

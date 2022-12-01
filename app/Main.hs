@@ -31,7 +31,7 @@ readInputs n = do
     where filepath = "input/Day" ++ show n ++ ".in"
 
 runSolution :: Int -> IO ()
-runSolution n = readInputs n >>= putStrLn . solve n
+runSolution n = readInputs n >>= putStr . solve n
 
 
 main :: IO ()

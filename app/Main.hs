@@ -1,7 +1,7 @@
 module Main (main) where
 import           Control.Exception  (try)
 import           Control.Monad      ((>=>))
-import qualified Day01
+import qualified Day01              (solve)
 import           System.Environment (getArgs)
 import           System.Exit        (exitFailure, exitSuccess)
 import           Utils              (parseInt, showResults)
@@ -22,8 +22,8 @@ parseArgs s = mapM (parseInt >=> verify) s
 
 usage :: IO ()
 usage = do
-    putStrLn "Usage: AoC2022 [day]     run solution for days listed in [day]"
-    putStrLn "       AoC2022 all       run all implemented solutions"   
+    putStrLn "Usage: AoC2020 [day]     run solution for days listed in [day]"
+    putStrLn "       AoC2022 all       run all implemented solutions"
 
 readInputs :: Int -> IO String
 readInputs n = do

@@ -26,14 +26,19 @@ source-repository head
 library
   exposed-modules:
       Utils
+      Day01
+      Main
   other-modules:
       Paths_AoC2022
   hs-source-dirs:
       src
+      app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -O3
   build-depends:
       base >=4.7 && <5
     , split
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010
 
 executable AoC2022-exe
@@ -48,6 +53,8 @@ executable AoC2022-exe
       AoC2022
     , base >=4.7 && <5
     , split
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010
 
 executable Day01-exe
@@ -62,6 +69,8 @@ executable Day01-exe
       AoC2022
     , base >=4.7 && <5
     , split
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010
 
 test-suite AoC2022-test
@@ -76,4 +85,6 @@ test-suite AoC2022-test
       AoC2022
     , base >=4.7 && <5
     , split
+    , tasty
+    , tasty-hunit
   default-language: Haskell2010

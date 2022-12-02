@@ -1,8 +1,8 @@
 module Day01 (solve, main) where
+import           Data.Functor    ((<&>))
 import           Data.List       (sort)
 import           Data.List.Split (splitOn)
-import           Utils           (parseInt, applyTuple, showResults)
-import Data.Functor ((<&>))
+import           Utils           (applyTuple, parseInt, showResults)
 
 parse :: String -> IO [[Int]]
 parse = mapM (mapM parseInt) . splitOn [""] . lines

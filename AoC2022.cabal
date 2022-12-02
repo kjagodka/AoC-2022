@@ -27,6 +27,7 @@ library
   exposed-modules:
       Utils
       Day01
+      Day02
       Main
   other-modules:
       Paths_AoC2022
@@ -45,6 +46,7 @@ executable AoC2022-exe
   main-is: Main.hs
   other-modules:
       Day01
+      Day02
       Paths_AoC2022
   hs-source-dirs:
       app
@@ -60,6 +62,7 @@ executable AoC2022-exe
 executable Day01-exe
   main-is: Day01.hs
   other-modules:
+      Day02
       Main
       Paths_AoC2022
   hs-source-dirs:

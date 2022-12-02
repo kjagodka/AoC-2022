@@ -1,8 +1,8 @@
-module Day01 (solve, main) where
+module Day01 (solve) where
 import           Data.Functor    ((<&>))
 import           Data.List       (sort)
 import           Data.List.Split (splitOn)
-import           Utils           (applyTuple, parseInt, showResults)
+import           Utils           (applyTuple, parseInt)
 
 parse :: String -> IO [[Int]]
 parse = mapM (mapM parseInt) . splitOn [""] . lines
@@ -15,6 +15,3 @@ part2 = sum . take 3 . reverse . sort . map sum
 
 solve :: String -> IO (Int, Int)
 solve input = parse input <&> applyTuple (part1, part2)
-
-main :: IO ()
-main = getContents >>= solve >>= putStrLn . showResults

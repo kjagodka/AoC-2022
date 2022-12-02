@@ -1,7 +1,6 @@
-module Day02 (solve, main) where
+module Day02 (solve) where
 import           Data.Functor    ((<&>))
 import           Data.List.Split (splitOn)
-import           Utils           (showResults)
 
 data HandShape = Rock | Paper | Scissors
 data GameResult = Win | Draw | Loss
@@ -83,6 +82,3 @@ solve input = do
     p1 <- parsePart1 input <&> part1
     p2 <- parsePart2 input <&> part2
     return (p1, p2)
-
-main :: IO ()
-main = getContents >>= solve >>= putStrLn . showResults

@@ -64,6 +64,17 @@ executables:
     dependencies:
     - AoC2022
 
+  Day02-exe:
+    main:                Day02.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -main-is Day02
+    dependencies:
+    - AoC2022
+
 tests:
   AoC2022-test:
     main:                Spec.hs

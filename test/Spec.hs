@@ -12,7 +12,7 @@ testData = [("Day01",
             ("Day02",
               Day02.solve,
               "A Y\nB X\nC Z",
-              (15, 0))]
+              (15, 12))]
 
 generateDayTests :: (String, String -> IO (Int, Int), String, (Int, Int)) -> IO [TestTree]
 generateDayTests (name, fun, input, expected) = do

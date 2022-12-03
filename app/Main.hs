@@ -3,16 +3,18 @@ import           Control.Exception  (try)
 import           Control.Monad      ((>=>))
 import qualified Day01              (solve)
 import qualified Day02              (solve)
+import qualified Day03              (solve)
 import           System.Environment (getArgs)
 import           System.Exit        (exitFailure, exitSuccess)
 import           Utils              (parseInt, showResults)
 
 solvedDays :: [Int]
-solvedDays = [1, 2]
+solvedDays = [1, 2, 3]
 
 solve :: Int -> String -> IO (Int, Int)
 solve 1 = Day01.solve
 solve 2 = Day02.solve
+solve 3 = Day03.solve
 solve _ = undefined
 
 parseArgs :: [String] -> IO [Int]

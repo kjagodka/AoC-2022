@@ -24,6 +24,7 @@ dependencies:
 - split
 - tasty
 - tasty-hunit
+- containers
 
 ghc-options:
 - -Wall

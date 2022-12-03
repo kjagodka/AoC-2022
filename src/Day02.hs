@@ -22,7 +22,7 @@ parseGameResult "Z" = return Win
 parseGameResult s   = fail $ "Could not parse gameResult: " ++ s
 
 parsePart1 :: String -> IO [(HandShape, HandShape)]
-parsePart1 = mapM parseLine . filter (/= "") . lines
+parsePart1 = mapM parseLine . lines
         where parseLine s =
                 case splitOn [' '] s of
                 [a, b] -> do
@@ -33,7 +33,7 @@ parsePart1 = mapM parseLine . filter (/= "") . lines
 
 
 parsePart2 :: String -> IO [(HandShape, GameResult)]
-parsePart2 = mapM parseLine . filter (/= "") . lines
+parsePart2 = mapM parseLine . lines
         where parseLine s =
                 case splitOn [' '] s of
                 [a, b] -> do

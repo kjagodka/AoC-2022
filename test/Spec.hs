@@ -22,7 +22,7 @@ testData = [("Day01",
               \wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
               \ttgJtRGJQctTZtZT\n\
               \CrZsJsPPZsGzwwsLwLmpwMDw\n",
-              (157, 157))
+              (157, 70))
             ]
 
 generateDayTests :: (String, String -> IO (Int, Int), String, (Int, Int)) -> IO [TestTree]

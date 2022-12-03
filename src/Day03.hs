@@ -1,9 +1,9 @@
 module Day03 (solve) where
-import           Data.Char    (isLetter, isLower)
-import           Data.Functor ((<&>))
-import           Data.Set     (Set, fromList, toList, intersection)
-import           Utils        (pairMap)
-import Data.List.Split (chunksOf)
+import           Data.Char       (isLetter, isLower)
+import           Data.Functor    ((<&>))
+import           Data.List.Split (chunksOf)
+import           Data.Set        (Set, fromList, intersection, toList)
+import           Utils           (pairMap)
 
 verify :: String -> IO String
 verify s = if all isLetter s && even (length s)

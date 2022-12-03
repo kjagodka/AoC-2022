@@ -19,7 +19,7 @@ parse1 = mapM parseLine . lines
     where parseLine line = verify line <&> split <&> pairMap fromList
 
 parse2 :: String -> IO [[Set Char]]
-parse2 = return . chunksOf 3 . map fromList . lines
+parse2 s = fmap (chunksOf 3) (mapM (fmap fromList . verify) . lines $ s)
 
 itemPriority :: Char -> Int
 itemPriority c = if isLower c

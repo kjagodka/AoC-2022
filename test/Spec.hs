@@ -2,6 +2,7 @@ import           Data.Functor     ((<&>))
 import qualified Day01            (solve)
 import qualified Day02            (solve)
 import qualified Day03            (solve)
+import qualified Day04            (solve)
 import           Test.Tasty       (TestTree, defaultMain, testGroup)
 import           Test.Tasty.HUnit (assertEqual, testCase)
 
@@ -22,7 +23,16 @@ testData = [("Day01",
               \wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
               \ttgJtRGJQctTZtZT\n\
               \CrZsJsPPZsGzwwsLwLmpwMDw\n",
-              (157, 70))
+              (157, 70)),
+            ("Day04",
+              Day04.solve,
+              "2-4,6-8\n\
+              \2-3,4-5\n\
+              \5-7,7-9\n\
+              \2-8,3-7\n\
+              \6-6,4-6\n\
+              \2-6,4-8\n",
+              (2, 2))
             ]
 
 generateDayTests :: (String, String -> IO (Int, Int), String, (Int, Int)) -> IO [TestTree]

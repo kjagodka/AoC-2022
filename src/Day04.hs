@@ -7,7 +7,7 @@ import Utils (applyTuple, parseInt)
 type Assignment = (Int, Int)
 
 parse :: String -> IO [(Assignment, Assignment)]
-parse s = mapM parseLine . lines $ s
+parse = mapM parseLine . lines
   where
     parseAssignment str = case splitOn ['-'] str of
       [begin, end] -> do
@@ -16,7 +16,7 @@ parse s = mapM parseLine . lines $ s
         if begin' <= end'
           then return (begin', end')
           else fail $ "Wrong ordering of assignment: " ++ str
-      _ -> fail $ "Could not parse assignment: " ++ s
+      _ -> fail $ "Could not parse assignment: " ++ str
     parseLine line = case splitOn [','] line of
       [a, b] -> do
         a' <- parseAssignment a

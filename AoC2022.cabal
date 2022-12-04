@@ -6,22 +6,21 @@ cabal-version: 1.12
 
 name:           AoC2022
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/AoC2022#readme>
-homepage:       https://github.com/githubuser/AoC2022#readme
-bug-reports:    https://github.com/githubuser/AoC2022/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2022 Author name here
-license:        BSD3
+description:    Please see the README on GitHub at <https://github.com/kjagodka/AoC-2022#readme>
+homepage:       https://github.com/kjagodka/AoC-2022#readme
+bug-reports:    https://github.com/kjagodka/AoC-2022/issues
+author:         Cyryl Waśkiewicz
+maintainer:     Cyryl Waśkiewicz
+copyright:      2022 Cyryl Waśkiewicz
+license:        MIT
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
-    CHANGELOG.md
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/AoC2022
+  location: https://github.com/kjagodka/AoC-2022
 
 library
   exposed-modules:

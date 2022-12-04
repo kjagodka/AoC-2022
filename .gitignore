@@ -1,3 +1,5 @@
-/.*
+.stack-work**
+.vscode**
 dist-newstyle**
 /app/Main
+stack.yaml.lock

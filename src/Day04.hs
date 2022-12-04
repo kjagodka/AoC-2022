@@ -33,7 +33,7 @@ isContaining a b = isInside a b || isInside b a
 isOverlapping :: Assignment -> Assignment -> Bool
 isOverlapping a b = not $ isSeparate a b
   where
-    isSeparate (aBegin, aEnd) (bBegin, bEnd) = 
+    isSeparate (aBegin, aEnd) (bBegin, bEnd) =
       (aBegin > bEnd) || (aEnd < bBegin)
 
 part1 :: [(Assignment, Assignment)] -> Int

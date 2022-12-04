@@ -24,17 +24,23 @@ parse s = mapM parseLine . lines $ s
         return (a', b')
       _ -> fail $ "Could not parse line: " ++ line
 
-doContain :: Assignment -> Assignment -> Bool
-doContain a b = isInside a b || isInside b a
+isContaining :: Assignment -> Assignment -> Bool
+isContaining a b = isInside a b || isInside b a
   where
     isInside (aBegin, aEnd) (bBegin, bEnd) =
       (aBegin >= bBegin) && (aEnd <= bEnd)
 
+isOverlapping :: Assignment -> Assignment -> Bool
+isOverlapping a b = not $ isSeparate a b
+  where
+    isSeparate (aBegin, aEnd) (bBegin, bEnd) = 
+      (aBegin > bEnd) || (aEnd < bBegin)
+
 part1 :: [(Assignment, Assignment)] -> Int
-part1 = length . filter (uncurry doContain)
+part1 = length . filter (uncurry isContaining)
 
 part2 :: [(Assignment, Assignment)] -> Int
-part2 = part1
+part2 = length . filter (uncurry isOverlapping)
 
 solve :: String -> IO (Int, Int)
 solve input = parse input <&> applyTuple (part1, part2)

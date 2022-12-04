@@ -8,31 +8,31 @@ import           Test.Tasty.HUnit (assertEqual, testCase)
 
 testData :: [(String, String -> IO (Int, Int), String, (Int, Int))]
 testData = [("Day01",
-              Day01.solve,
-              "1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000",
-              (24000, 45000)),
+                Day01.solve,
+                "1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000",
+                (24000, 45000)),
             ("Day02",
               Day02.solve,
               "A Y\nB X\nC Z",
               (15, 12)),
             ("Day03",
-              Day03.solve,
-              "vJrwpWtwJgWrhcsFMMfFFhFp\n\
-              \jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n\
-              \PmmdzqPrVvPwwTWBwg\n\
-              \wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
-              \ttgJtRGJQctTZtZT\n\
-              \CrZsJsPPZsGzwwsLwLmpwMDw\n",
-              (157, 70)),
+                Day03.solve,
+                "vJrwpWtwJgWrhcsFMMfFFhFp\n\
+                \jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n\
+                \PmmdzqPrVvPwwTWBwg\n\
+                \wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
+                \ttgJtRGJQctTZtZT\n\
+                \CrZsJsPPZsGzwwsLwLmpwMDw\n",
+                (157, 70)),
             ("Day04",
-              Day04.solve,
-              "2-4,6-8\n\
-              \2-3,4-5\n\
-              \5-7,7-9\n\
-              \2-8,3-7\n\
-              \6-6,4-6\n\
-              \2-6,4-8\n",
-              (2, 2))
+                Day04.solve,
+                "2-4,6-8\n\
+                \2-3,4-5\n\
+                \5-7,7-9\n\
+                \2-8,3-7\n\
+                \6-6,4-6\n\
+                \2-6,4-8\n",
+                (2, 4))
             ]
 
 generateDayTests :: (String, String -> IO (Int, Int), String, (Int, Int)) -> IO [TestTree]

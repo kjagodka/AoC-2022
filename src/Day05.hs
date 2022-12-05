@@ -74,7 +74,7 @@ parse s = case splitOn [""] . lines $ s of
       _ -> fail $ "Could not parse move: " ++ mv
 
 makeMove1 :: (MonadFail m) => Cargo -> Move -> m Cargo
-makeMove1 cargo move@(count, from, to) = do takeFrom <&> dropAt
+makeMove1 cargo move@(count, from, to) = takeFrom <&> dropAt
   where
     takeFrom =
       let orig = findWithDefault [] from cargo

@@ -2,6 +2,7 @@ module Day02 (solve) where
 
 import Data.Functor ((<&>))
 import Data.List.Split (splitOn)
+import Utils (pairMap)
 
 data HandShape = Rock | Paper | Scissors
 
@@ -79,8 +80,8 @@ findShape opponentShape result = head $ filter ((result ==) . playGame opponentS
 part2 :: [(HandShape, GameResult)] -> Int
 part2 = sum . map (\(opp, res) -> scoreRound opp $ findShape opp res)
 
-solve :: String -> IO (Int, Int)
+solve :: String -> IO (String, String)
 solve input = do
   p1 <- parsePart1 input <&> part1
   p2 <- parsePart2 input <&> part2
-  return (p1, p2)
+  return $ pairMap show (p1, p2)

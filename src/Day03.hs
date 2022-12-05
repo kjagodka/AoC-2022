@@ -34,8 +34,5 @@ part1 = sum . map (itemPriority . head . toList . uncurry intersection)
 part2 :: [(Set Char, Set Char)] -> Int
 part2 = sum . map (itemPriority . head . toList . foldl1 intersection) . chunksOf 3 . map (uncurry union)
 
-solve :: String -> IO (Int, Int)
-solve input = parse input <&> applyTuple (part1, part2)
-
-commonTypes :: (Eq a) => ([a], [a]) -> [a]
-commonTypes (a, b) = filter (`elem` a) b
+solve :: String -> IO (String, String)
+solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

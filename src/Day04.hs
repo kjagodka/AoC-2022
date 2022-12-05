@@ -2,7 +2,7 @@ module Day04 (solve) where
 
 import Data.Functor ((<&>))
 import Data.List.Split (splitOn)
-import Utils (applyTuple, parseInt)
+import Utils (applyTuple, pairMap, parseInt)
 
 type Assignment = (Int, Int)
 
@@ -42,5 +42,5 @@ part1 = length . filter (uncurry isContaining)
 part2 :: [(Assignment, Assignment)] -> Int
 part2 = length . filter (uncurry isOverlapping)
 
-solve :: String -> IO (Int, Int)
-solve input = parse input <&> applyTuple (part1, part2)
+solve :: String -> IO (String, String)
+solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

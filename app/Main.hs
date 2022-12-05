@@ -13,7 +13,7 @@ import Utils (parseInt, showResults)
 solvedDays :: [Int]
 solvedDays = [1, 2, 3, 4]
 
-solve :: Int -> String -> IO (Int, Int)
+solve :: Int -> String -> IO (String, String)
 solve 1 = Day01.solve
 solve 2 = Day02.solve
 solve 3 = Day03.solve

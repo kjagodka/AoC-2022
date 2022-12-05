@@ -3,12 +3,13 @@ module Day05 (solve) where
 import Control.Monad (foldM)
 import Data.Char (isLetter)
 import Data.Functor ((<&>))
+import Data.List (transpose)
 import Data.List.Split (chunksOf, splitOn, wordsBy)
-import Data.Map as Map (Map, adjust, empty, findWithDefault, foldr, insert, member, size)
+import Data.Map as Map (Map, adjust, findWithDefault, foldr, fromAscList, size)
 import Utils (applyTuple, joinPair, parseInt)
 
 data Crate = Empty | Crate Char
-  deriving (Eq)
+  deriving (Eq, Show)
 
 type Stack = [Crate]
 
@@ -20,7 +21,7 @@ parse :: String -> IO (Cargo, [Move])
 parse s = case splitOn [""] . lines $ s of
   [cargoPart, movesPart] -> do
     cargo <- parseCargo cargoPart
-    moves <- mapM (parseMove cargo) movesPart
+    moves <- mapM (parseMove $ size cargo) movesPart
     return (cargo, moves)
   _ -> fail $ "Could not parse input:\n" ++ s
   where
@@ -28,24 +29,30 @@ parse s = case splitOn [""] . lines $ s of
     parseCargo lns = case reverse lns of
       [] -> fail "Unable to parsy empty cargo description"
       legend : rows -> do
-        cargo <- parseLegend legend
-        mapM (parseRow cargo) rows <&> foldl addRow cargo
+        legend' <- parseLegend legend
+        stacks <- mapM (parseRow $ length legend') rows >>= mapM (verifyStack . reverse) . transpose <&> map removeEmpty
+        return $ fromAscList (zip [1 ..] stacks)
 
-    parseLegend :: String -> IO Cargo
-    parseLegend str = mapM parseInt (wordsBy (== ' ') str) <&> foldl (\cargo key -> insert key [] cargo) empty
+    verifyStack :: Stack -> IO Stack
+    verifyStack stack =
+      let countEmpty = length $ filter (== Empty) stack
+       in if take countEmpty stack == replicate countEmpty Empty
+            then return $ filter (/= Empty) stack
+            else fail "Stack contains empty spots under crates"
 
-    parseRow :: Cargo -> String -> IO [Crate]
-    parseRow cargo str = (mapM parseCrate . chunksOf 4 $ str ++ " ") >>= verifyRow
+    removeEmpty :: Stack -> Stack
+    removeEmpty = filter (/= Empty)
+
+    parseLegend :: String -> IO [Int]
+    parseLegend str = mapM parseInt (wordsBy (== ' ') str)
+
+    parseRow :: Int -> String -> IO [Crate]
+    parseRow expSize str = (mapM parseCrate . chunksOf 4 $ str ++ " ") >>= verifyRow
       where
         verifyRow crates =
-          if length crates == size cargo
+          if length crates == expSize
             then return crates
-            else fail $ "Could not parse row of cargo: " ++ str ++ "\n. Expected size: " ++ show (size cargo) ++ "Actual size: " ++ show (length crates)
-
-    addRow :: Cargo -> [Crate] -> Cargo
-    addRow cargo row =
-      let numbered = filter ((/= Empty) . snd) . zip [1 ..] $ row
-       in foldl (\cargo' (key, crate) -> adjust (crate :) key cargo') cargo numbered
+            else fail $ "Could not parse row of cargo: " ++ str ++ "\n. Expected size: " ++ show expSize ++ "Actual size: " ++ show (length crates)
 
     parseCrate :: String -> IO Crate
     parseCrate "    " = return Empty
@@ -55,19 +62,19 @@ parse s = case splitOn [""] . lines $ s of
         else fail $ "Could not parse crate: " ++ cr
     parseCrate cr = fail $ "Could not parse crate: " ++ cr
 
-    parseMove :: Cargo -> String -> IO Move
-    parseMove cargo mv = case splitOn [' '] mv of
+    parseMove :: Int -> String -> IO Move
+    parseMove expSize mv = case splitOn [' '] mv of
       ["move", a, "from", b, "to", c] -> do
         a' <- parseInt a
         b' <- parseInt b
         c' <- parseInt c
-        if a' > 0 && member b' cargo && member c' cargo
+        if a' > 0 && 1 <= b' && b' <= expSize && 1 <= c' && c' <= expSize
           then return (a', b', c')
-          else fail $ "Encountered negative integer, when parsing move: " ++ mv
+          else fail $ "Encountered integer out of range, when parsing move: " ++ mv
       _ -> fail $ "Could not parse move: " ++ mv
 
 makeMove1 :: (MonadFail m) => Cargo -> Move -> m Cargo
-makeMove1 cargo move@(count, from, to) = takeFrom <&> dropAt
+makeMove1 cargo move@(count, from, to) = do takeFrom <&> dropAt
   where
     takeFrom =
       let orig = findWithDefault [] from cargo

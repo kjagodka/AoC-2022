@@ -3,6 +3,7 @@ import qualified Day01 (solve)
 import qualified Day02 (solve)
 import qualified Day03 (solve)
 import qualified Day04 (solve)
+import qualified Day05 (solve)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
@@ -37,7 +38,20 @@ testData =
       \6-6,4-6\n\
       \2-6,4-8\n",
       ("2", "4")
-    )
+    ),
+    ( "Day05",
+      Day05.solve,
+      "    [D]    \n\
+      \[N] [C]    \n\
+      \[Z] [M] [P]\n\
+      \ 1   2   3 \n\
+      \\n\
+      \move 1 from 2 to 1\n\
+      \move 3 from 1 to 3\n\
+      \move 2 from 2 to 1\n\
+      \move 1 from 1 to 2\n",
+      ("CMZ", "CMZ")
+      )
   ]
 
 generateDayTests :: (String, String -> IO (String, String), String, (String, String)) -> IO [TestTree]

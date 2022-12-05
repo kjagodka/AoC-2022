@@ -50,7 +50,7 @@ testData =
       \move 3 from 1 to 3\n\
       \move 2 from 2 to 1\n\
       \move 1 from 1 to 2\n",
-      ("CMZ", "CMZ")
+      ("CMZ", "MCD")
       )
   ]
 

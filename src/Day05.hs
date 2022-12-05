@@ -55,8 +55,8 @@ parse s = case splitOn [""] . lines $ s of
           else fail $ "Encountered negative integer, when parsing move: " ++ mv
       _ -> fail $ "Could not parse move: " ++ mv
 
-makeMove :: (MonadFail m) => Cargo -> Move -> m Cargo
-makeMove cargo move@(count, from, to) = takeFrom >>= dropAt
+makeMove1 :: (MonadFail m) => Cargo -> Move -> m Cargo
+makeMove1 cargo move@(count, from, to) = takeFrom >>= dropAt
   where
     takeFrom =
       let orig = findWithDefault [] from cargo
@@ -65,18 +65,33 @@ makeMove cargo move@(count, from, to) = takeFrom >>= dropAt
             else return (adjust (drop count) from cargo, take count orig)
     dropAt (cargo', stack) = return $ insertWith (++) to (reverse stack) cargo'
 
+makeMove2 :: (MonadFail m) => Cargo -> Move -> m Cargo
+makeMove2 cargo move@(count, from, to) = takeFrom >>= dropAt
+  where
+    takeFrom =
+      let orig = findWithDefault [] from cargo
+       in if (< count) . length $ orig
+            then fail $ "Not enough crates in stack to make move" ++ show move
+            else return (adjust (drop count) from cargo, take count orig)
+    dropAt (cargo', stack) = return $ insertWith (++) to stack cargo'
+
 crateToChar :: MonadFail m => Crate -> m Char
 crateToChar Empty = fail "Tried to show empty"
 crateToChar (Crate c) = return c
 
-part1 :: (Cargo, [Move]) -> IO String
-part1 (cargo, moves) =
-  foldM makeMove cargo moves
+
+solvePart :: (MonadFail m) => (Cargo -> Move -> m Cargo) -> (Cargo, [Move]) -> m String
+solvePart f (cargo, moves) =
+  foldM f cargo moves
     <&> Map.foldr (\stack acc -> head stack : acc) []
     >>= mapM crateToChar
 
+
+part1 :: (Cargo, [Move]) -> IO String
+part1 = solvePart makeMove1
+
 part2 :: (Cargo, [Move]) -> IO String
-part2 = part1
+part2 = solvePart makeMove2
 
 solve :: String -> IO (String, String)
 solve input = parse input <&> applyTuple (part1, part2) >>= joinPair

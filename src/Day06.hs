@@ -12,7 +12,7 @@ parse str = case lines str of
   [line] -> mapM verifyChar line
   _ -> fail $ "Expected exactly one line, could not parse input: " ++ str
   where
-    verifyChar c = if isLower c then return c else fail $ "Encountered illegal character when parsing input:" ++ str
+    verifyChar c = if isLower c then return c else fail $ "Encountered illegal character: '" ++ [c] ++ "' when parsing input:" ++ str
 
 isMarker :: [Char] -> Bool
 isMarker str = length str == size (fromList str)

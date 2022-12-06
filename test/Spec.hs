@@ -1,3 +1,4 @@
+import Control.Exception (try)
 import Data.Functor ((<&>))
 import qualified Day01 (solve)
 import qualified Day02 (solve)
@@ -5,6 +6,7 @@ import qualified Day03 (solve)
 import qualified Day04 (solve)
 import qualified Day05 (solve)
 import qualified Day06 (solve)
+import System.IO.Error (ioeGetErrorString)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
@@ -75,19 +77,25 @@ testData =
     ),
     ( "Day06 example5",
       Day06.solve,
-      "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw\n",
+      ".zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw\n",
       ("11", "26")
     )
   ]
 
 generateDayTests :: (String, String -> IO (String, String), String, (String, String)) -> IO [TestTree]
-generateDayTests (name, fun, input, expected) = do
-  output <- fun input
-  let test1 = testCase (name ++ " part1") $ assertEqual "" (fst expected) (fst output)
-      test2 = testCase (name ++ " part2") $ assertEqual "" (snd expected) (snd output)
-   in return [test1, test2]
+generateDayTests (name, fun, input, (exp1, exp2)) = do
+  outputsOrError <- try $ fun input :: IO (Either IOError (String, String))
+  case outputsOrError of
+    Left e -> do
+      return $ makeTests (ioeGetErrorString e, ioeGetErrorString e)
+    Right outputs -> return $ makeTests outputs
+  where
+    makeTests (out1, out2) =
+      let test1 = testCase (name ++ " part1") $ assertEqual "" exp1 out1
+          test2 = testCase (name ++ " part2") $ assertEqual "" exp2 out2
+       in [test1, test2]
 
 main :: IO ()
 main = do
-  tests <- mapM generateDayTests testData <&> (testGroup "tests" . concat)
+  tests <- mapM generateDayTests testData <&> testGroup "tests" . concat
   defaultMain tests

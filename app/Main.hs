@@ -11,6 +11,7 @@ import qualified Day06 (solve)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
 import Utils (parseInt, showResults)
+import System.IO.Error (ioeGetErrorString)
 
 solvedDays :: [Int]
 solvedDays = [1, 2, 3, 4, 5, 6]
@@ -36,7 +37,7 @@ parseArgs s = mapM (parseInt >=> verify) s
 
 usage :: IO ()
 usage = do
-  putStrLn "Usage: AoC2020 [day]     run solution for days listed in [day]"
+  putStrLn "Usage: AoC2022 [day]     run solution for days listed in [day]"
   putStrLn "       AoC2022 all       run all implemented solutions"
 
 readInputs :: Int -> IO String
@@ -51,7 +52,11 @@ readInputs n = do
 runSolution :: Int -> IO ()
 runSolution n = do
   putStrLn $ "Day " ++ show n
-  readInputs n >>= solve n >>= putStrLn . showResults
+  resultsOrError <- try (readInputs n >>= solve n) :: IO (Either IOError (String, String))
+  case resultsOrError of
+    Right result -> putStrLn $ showResults result
+    Left e -> do
+      putStrLn $ ioeGetErrorString e
 
 runSolutions :: [Int] -> IO ()
 runSolutions = mapM_ runSolution

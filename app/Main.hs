@@ -7,12 +7,13 @@ import qualified Day02 (solve)
 import qualified Day03 (solve)
 import qualified Day04 (solve)
 import qualified Day05 (solve)
+import qualified Day06 (solve)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
 import Utils (parseInt, showResults)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5]
+solvedDays = [1, 2, 3, 4, 5, 6]
 
 solve :: Int -> String -> IO (String, String)
 solve 1 = Day01.solve
@@ -20,6 +21,7 @@ solve 2 = Day02.solve
 solve 3 = Day03.solve
 solve 4 = Day04.solve
 solve 5 = Day05.solve
+solve 6 = Day06.solve
 solve _ = undefined
 
 parseArgs :: [String] -> IO [Int]

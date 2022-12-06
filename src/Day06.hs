@@ -2,7 +2,7 @@ module Day06 (solve) where
 
 import Data.Char (isLower)
 import Data.Functor ((<&>))
-import Data.List (elemIndex)
+import Data.List (findIndex)
 import Data.List.Split (divvy)
 import Data.Set (fromList, size)
 import Utils (applyTuple, joinPair, pairMap)
@@ -18,12 +18,12 @@ isMarker :: [Char] -> Bool
 isMarker str = length str == size (fromList str)
 
 part1 :: String -> IO Int
-part1 s = case elemIndex True . map isMarker . divvy 4 1 $ s of
+part1 s = case findIndex isMarker . divvy 4 1 $ s of
   Just n -> return $ n + 4
   Nothing -> fail $ "No marker in input: " ++ s
 
 part2 :: String -> IO Int
-part2 s = case elemIndex True . map isMarker . divvy 14 1 $ s of
+part2 s = case findIndex isMarker . divvy 14 1 $ s of
   Just n -> return $ n + 14
   Nothing -> fail $ "No marker in input: " ++ s
 

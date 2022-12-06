@@ -8,7 +8,7 @@ import qualified Day03 (solve)
 import qualified Day04 (solve)
 import qualified Day05 (solve)
 import qualified Day06 (solve)
-import System.Console.ANSI( Color (Red), ColorIntensity (Vivid), ConsoleLayer (Foreground), SGR (Reset, SetColor), setSGR)
+import System.Console.ANSI (Color (Red), ColorIntensity (Vivid), ConsoleLayer (Foreground), SGR (Reset, SetColor), setSGR)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
 import System.IO.Error (ioeGetErrorString)
@@ -45,7 +45,7 @@ readInputs :: Int -> IO String
 readInputs n = do
   contentOrExc <- try $ readFile filepath :: IO (Either IOError String)
   case contentOrExc of
-    Left _ -> putStrLn ("Could not read file: " ++ filepath) >> exitFailure
+    Left _ -> fail $ "Could not read file: " ++ filepath
     Right contents -> return contents
   where
     filepath = "input/Day" ++ show n ++ ".in"
@@ -58,7 +58,7 @@ runSolution n = do
     Right result -> putStrLn $ showResults result
     Left e -> do
       setSGR [SetColor Foreground Vivid Red]
-      putStrLn $ ioeGetErrorString e
+      putStrLn $ ioeGetErrorString e ++ "\n"
       setSGR [Reset]
 
 runSolutions :: [Int] -> IO ()

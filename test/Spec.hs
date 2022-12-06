@@ -56,27 +56,27 @@ testData =
     ( "Day06 example1",
       Day06.solve,
       "mjqjpqmgbljsphdztnvjfqwrcgsmlb\n",
-      ("7", "7")
+      ("7", "19")
     ),
     ( "Day06 example2",
       Day06.solve,
       "bvwbjplbgvbhsrlpgdmjqwftvncz\n",
-      ("5", "5")
+      ("5", "23")
     ),
     ( "Day06 example3",
       Day06.solve,
       "nppdvjthqldpwncqszvftbrmjlhg\n",
-      ("6", "6")
+      ("6", "23")
     ),
     ( "Day06 example4",
       Day06.solve,
       "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg\n",
-      ("10", "10")
+      ("10", "29")
     ),
     ( "Day06 example5",
       Day06.solve,
       "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw\n",
-      ("11", "11")
+      ("11", "26")
     )
   ]
 

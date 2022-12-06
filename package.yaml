@@ -22,6 +22,7 @@ dependencies:
 - tasty
 - tasty-hunit
 - containers
+- ansi-terminal
 
 ghc-options:
 - -Wall

@@ -8,10 +8,11 @@ import qualified Day03 (solve)
 import qualified Day04 (solve)
 import qualified Day05 (solve)
 import qualified Day06 (solve)
+import System.Console.ANSI( Color (Red), ColorIntensity (Vivid), ConsoleLayer (Foreground), SGR (Reset, SetColor), setSGR)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
-import Utils (parseInt, showResults)
 import System.IO.Error (ioeGetErrorString)
+import Utils (parseInt, showResults)
 
 solvedDays :: [Int]
 solvedDays = [1, 2, 3, 4, 5, 6]
@@ -56,7 +57,9 @@ runSolution n = do
   case resultsOrError of
     Right result -> putStrLn $ showResults result
     Left e -> do
+      setSGR [SetColor Foreground Vivid Red]
       putStrLn $ ioeGetErrorString e
+      setSGR [Reset]
 
 runSolutions :: [Int] -> IO ()
 runSolutions = mapM_ runSolution

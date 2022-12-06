@@ -77,7 +77,7 @@ testData =
     ),
     ( "Day06 example5",
       Day06.solve,
-      ".zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw\n",
+      "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw\n",
       ("11", "26")
     )
   ]

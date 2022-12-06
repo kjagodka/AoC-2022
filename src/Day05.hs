@@ -5,7 +5,7 @@ import Data.Char (isLetter)
 import Data.Functor ((<&>))
 import Data.List (transpose)
 import Data.List.Split (chunksOf, splitOn, wordsBy)
-import Data.Map as Map (Map, adjust, findWithDefault, foldr, fromAscList, size)
+import Data.Map as Map (Map, adjust, elems, findWithDefault, fromAscList, map, size)
 import Utils (applyTuple, joinPair, parseInt)
 
 data Crate = Empty | Crate Char
@@ -30,7 +30,7 @@ parse s = case splitOn [""] . lines $ s of
       [] -> fail "Unable to parsy empty cargo description"
       legend : rows -> do
         legend' <- parseLegend legend
-        stacks <- mapM (parseRow $ length legend') rows >>= mapM (verifyStack . reverse) . transpose <&> map removeEmpty
+        stacks <- mapM (parseRow $ length legend') rows >>= mapM (verifyStack . reverse) . transpose <&> Prelude.map removeEmpty
         return $ fromAscList (zip [1 ..] stacks)
 
     verifyStack :: Stack -> IO Stack
@@ -100,7 +100,7 @@ crateToChar (Crate c) = return c
 solvePart :: (MonadFail m) => (Cargo -> Move -> m Cargo) -> (Cargo, [Move]) -> m String
 solvePart f (cargo, moves) =
   foldM f cargo moves
-    >>= mapM crateToChar . Map.foldr (\stack acc -> head stack : acc) []
+    >>= mapM crateToChar . elems . Map.map head
 
 part1 :: (Cargo, [Move]) -> IO String
 part1 = solvePart makeMove1

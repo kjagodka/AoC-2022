@@ -45,23 +45,17 @@ discSize :: Object -> Int
 discSize (File n) = n
 discSize (Directory dir) = M.foldl (\acc obj -> acc + discSize obj) 0 dir
 
+directories :: FileSystem -> [Object]
+directories (File _) = []
+directories (Directory dir) = M.foldl (\acc obj -> acc ++ directories obj) [Directory dir] dir
+
 part1 :: Int -> FileSystem -> Int
-part1 _ (File _) = 0
-part1 threshold (Directory dir) = M.foldl (\acc obj -> acc + part1 threshold obj) startAcc dir
-  where
-    size = discSize (Directory dir)
-    isSmall = size <= threshold
-    startAcc = if isSmall then size else 0
+part1 threshold = sum . filter (threshold >=) . map discSize . directories
 
 part2 :: Int -> Int -> FileSystem -> Int
-part2 capacity required fs = loop fs
+part2 capacity required fs = minimum . filter (threshold <=) . map discSize . directories $ fs
   where
     threshold = discSize fs - (capacity - required)
-    loop (File _) = maxBound
-    loop (Directory dir) = M.foldl (\acc obj -> acc `min` loop obj) startAcc dir
-      where
-        size = discSize (Directory dir)
-        startAcc = if size >= threshold then size else maxBound
 
 solve :: String -> IO (String, String)
 solve input =

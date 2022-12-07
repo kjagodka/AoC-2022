@@ -45,12 +45,12 @@ discSize :: Object -> Int
 discSize (File n) = n
 discSize (Directory dir) = M.foldl (\acc obj -> acc + discSize obj) 0 dir
 
-part1 :: FileSystem -> Int
-part1 (File _) = 0
-part1 (Directory dir) = M.foldl (\acc obj -> acc + part1 obj) startAcc dir
+part1 :: Int -> FileSystem -> Int
+part1 _ (File _) = 0
+part1 threshold (Directory dir) = M.foldl (\acc obj -> acc + part1 threshold obj) startAcc dir
   where
     size = discSize (Directory dir)
-    isSmall = size <= 100000
+    isSmall = size <= threshold
     startAcc = if isSmall then size else 0
 
 part2 :: Int -> Int -> FileSystem -> Int
@@ -66,4 +66,4 @@ part2 capacity required fs = loop fs
 solve :: String -> IO (String, String)
 solve input =
   parse input
-    <&> applyTuple (show . part1, show . part2 70000000 30000000)
+    <&> applyTuple (show . part1 100000, show . part2 70000000 30000000)

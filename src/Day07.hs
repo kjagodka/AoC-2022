@@ -2,7 +2,7 @@ module Day07 (solve) where
 
 import Data.Functor ((<&>))
 import Data.Map as M (Map, adjust, empty, foldl, insert)
-import Utils (applyTuple, pairMap, parseInt)
+import Utils (applyTuple, parseInt)
 
 type Entry = (String, Object)
 
@@ -13,11 +13,6 @@ data FileSystem = File Int | Directory (Map String Object)
 type Path = [String]
 
 data TermLine = CD String | CDOut | CDRoot | LS | Output Entry
-
-instance Show FileSystem where
-  show fs = case fs of
-    File n -> show n
-    Directory m -> show m
 
 parse :: String -> IO FileSystem
 parse str = mapM parseLine (lines str) <&> fst . Prelude.foldl applyTermLine (Directory M.empty, [])
@@ -68,6 +63,7 @@ part2 capacity required fs = loop fs
         size = discSize (Directory dir)
         startAcc = if size >= threshold then size else maxBound
 
-
 solve :: String -> IO (String, String)
-solve input = parse input <&> applyTuple (part1, part2 70000000 30000000) <&> pairMap show
+solve input =
+  parse input
+    <&> applyTuple (show . part1, show . part2 70000000 30000000)

@@ -106,7 +106,7 @@ testData =
       \8033020 d.log\n\
       \5626152 d.ext\n\
       \7214296 k\n",
-      ("95437", "95437"))
+      ("95437", "24933642"))
   ]
 
 generateDayTests :: (String, String -> IO (String, String), String, (String, String)) -> IO [TestTree]

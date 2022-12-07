@@ -1,7 +1,7 @@
 module Day07 (solve) where
 
 import Data.Functor ((<&>))
-import Data.Map as M (Map, adjust, empty, foldl, insert, member)
+import Data.Map as M (Map, adjust, empty, foldl, insert)
 import Utils (applyTuple, pairMap, parseInt)
 
 type Entry = (String, Object)
@@ -42,10 +42,7 @@ parse str = mapM parseLine (lines str) <&> fst . Prelude.foldl applyTermLine (Di
     applyTermLine (fs, path) (Output entry) = (addEntry path entry fs, path)
 
     addEntry :: Path -> Entry -> FileSystem -> FileSystem
-    addEntry (dir : path') entry (Directory fs) =
-      if member dir fs
-        then Directory $ adjust (addEntry path' entry) dir fs
-        else Directory $ insert dir (addEntry path' entry (Directory empty)) fs
+    addEntry (dir : path') entry (Directory fs) = Directory $ adjust (addEntry path' entry) dir fs
     addEntry [] (name, object) (Directory fs) = Directory $ insert name object fs
     addEntry _ _ (File _) = undefined
 
@@ -61,5 +58,16 @@ part1 (Directory dir) = M.foldl (\acc obj -> acc + part1 obj) startAcc dir
     isSmall = size <= 100000
     startAcc = if isSmall then size else 0
 
+part2 :: Int -> Int -> FileSystem -> Int
+part2 capacity required fs = loop fs
+  where
+    threshold = discSize fs - (capacity - required)
+    loop (File _) = maxBound
+    loop (Directory dir) = M.foldl (\acc obj -> acc `min` loop obj) startAcc dir
+      where
+        size = discSize (Directory dir)
+        startAcc = if size >= threshold then size else maxBound
+
+
 solve :: String -> IO (String, String)
-solve input = parse input <&> applyTuple (part1, part1) <&> pairMap show
+solve input = parse input <&> applyTuple (part1, part2 70000000 30000000) <&> pairMap show

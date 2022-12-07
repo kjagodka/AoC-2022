@@ -8,6 +8,7 @@ import qualified Day03 (solve)
 import qualified Day04 (solve)
 import qualified Day05 (solve)
 import qualified Day06 (solve)
+import qualified Day07 (solve)
 import System.Console.ANSI (Color (Red), ColorIntensity (Vivid), ConsoleLayer (Foreground), SGR (Reset, SetColor), setSGR)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
@@ -15,7 +16,7 @@ import System.IO.Error (ioeGetErrorString)
 import Utils (parseInt, showResults)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6]
+solvedDays = [1, 2, 3, 4, 5, 6, 7]
 
 solve :: Int -> String -> IO (String, String)
 solve 1 = Day01.solve
@@ -24,6 +25,7 @@ solve 3 = Day03.solve
 solve 4 = Day04.solve
 solve 5 = Day05.solve
 solve 6 = Day06.solve
+solve 7 = Day07.solve
 solve _ = undefined
 
 parseArgs :: [String] -> IO [Int]

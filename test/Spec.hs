@@ -7,6 +7,7 @@ import qualified Day04 (solve)
 import qualified Day05 (solve)
 import qualified Day06 (solve)
 import qualified Day07 (solve)
+import qualified Day08 (solve)
 import System.IO.Error (ioeGetErrorString)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, testCase)
@@ -96,7 +97,7 @@ testData =
       \2557 g\n\
       \62596 h.lst\n\
       \$ cd e\n\
-      \$ ls\n\    
+      \$ ls\n\
       \584 i\n\
       \$ cd ..\n\
       \$ cd ..\n\
@@ -106,7 +107,17 @@ testData =
       \8033020 d.log\n\
       \5626152 d.ext\n\
       \7214296 k\n",
-      ("95437", "24933642"))
+      ("95437", "24933642")
+    ),
+    ( "Day08",
+      Day08.solve,
+      "30373\n\
+      \25512\n\
+      \65332\n\
+      \33549\n\
+      \35390\n",
+      ("21", "21")
+    )
   ]
 
 generateDayTests :: (String, String -> IO (String, String), String, (String, String)) -> IO [TestTree]

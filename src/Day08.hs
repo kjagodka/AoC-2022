@@ -34,8 +34,28 @@ visible trees =
     visibleRight :: [[Int]] -> [[Bool]]
     visibleRight = map (snd . mapAccumR (\acc tree -> (max tree acc, tree > acc)) (-1))
 
+score :: [[Int]] -> [[Int]]
+score trees =
+  let left = rangeLeft trees
+      right = rangeRight trees
+      up = transpose . rangeLeft . transpose $ trees
+      down = transpose . rangeRight . transpose $ trees
+   in foldl1 (zipWith (zipWith (*))) [left, right, up, down]
+  where
+    helper :: ([(Int, Int)], Int) -> Int -> (([(Int, Int)], Int), Int)
+    helper (tallestBefore, index) height =
+      let tallestBefore' = dropWhile ((< height) . fst) tallestBefore
+       in (((height, index) : tallestBefore', index + 1), index - snd (head tallestBefore'))
+    rangeLeft :: [[Int]] -> [[Int]]
+    rangeLeft = map (snd . mapAccumL helper ([(maxBound, 0)], 0))
+    rangeRight :: [[Int]] -> [[Int]]
+    rangeRight = map (snd . mapAccumR helper ([(maxBound, 0)], 0))
+
 part1 :: [[Int]] -> Int
 part1 = sum . map (length . filter id) . visible
 
+part2 :: [[Int]] -> Int
+part2 = maximum . map maximum . score
+
 solve :: String -> IO (String, String)
-solve input = parse input <&> applyTuple (part1, part1) <&> pairMap show
+solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

@@ -2,7 +2,8 @@ module Day08 (solve) where
 
 import Data.Char (isDigit)
 import Data.Functor ((<&>))
-import Data.List (mapAccumL, mapAccumR, transpose)
+import Data.List (find, mapAccumL, mapAccumR, transpose)
+import Data.Maybe (fromMaybe)
 import Utils (applyTuple, pairMap)
 
 parse :: String -> IO [[Int]]
@@ -36,20 +37,23 @@ visible trees =
 
 score :: [[Int]] -> [[Int]]
 score trees =
-  let left = rangeLeft trees
-      right = rangeRight trees
-      up = transpose . rangeLeft . transpose $ trees
-      down = transpose . rangeRight . transpose $ trees
+  let left = mapRangeLeft trees
+      right = mapRangeRight trees
+      up = transpose . mapRangeLeft . transpose $ trees
+      down = transpose . mapRangeRight . transpose $ trees
    in foldl1 (zipWith (zipWith (*))) [left, right, up, down]
   where
-    helper :: ([(Int, Int)], Int) -> Int -> (([(Int, Int)], Int), Int)
-    helper (tallestBefore, index) height =
-      let tallestBefore' = dropWhile ((< height) . fst) tallestBefore
-       in (((height, index) : tallestBefore', index + 1), index - snd (head tallestBefore'))
-    rangeLeft :: [[Int]] -> [[Int]]
-    rangeLeft = map (snd . mapAccumL helper ([(maxBound, 0)], 0))
-    rangeRight :: [[Int]] -> [[Int]]
-    rangeRight = map (snd . mapAccumR helper ([(maxBound, 0)], 0))
+    mapRangeLeft :: [[Int]] -> [[Int]]
+    mapRangeLeft = map (snd . mapAccumL viewRange ([], 0))
+
+    viewRange :: ([(Int, Int)], Int) -> Int -> (([(Int, Int)], Int), Int)
+    viewRange (tallestBefore, index) height = ((newTallestBefore, index + 1), index - lastTallerIndex)
+      where
+        newTallestBefore = (height, index) : dropWhile ((< height) . fst) tallestBefore
+        lastTallerIndex = snd . fromMaybe (0, 0) $ find ((>= height) . fst) tallestBefore
+
+    mapRangeRight :: [[Int]] -> [[Int]]
+    mapRangeRight = map reverse . mapRangeLeft . map reverse
 
 part1 :: [[Int]] -> Int
 part1 = sum . map (length . filter id) . visible

@@ -1,34 +1,11 @@
-module Main (main) where
-
 import Control.Exception (try)
 import Control.Monad ((>=>))
-import qualified Day01 (solve)
-import qualified Day02 (solve)
-import qualified Day03 (solve)
-import qualified Day04 (solve)
-import qualified Day05 (solve)
-import qualified Day06 (solve)
-import qualified Day07 (solve)
-import qualified Day08 (solve)
+import Solutions (solve, solvedDays)
 import System.Console.ANSI (Color (Red), ColorIntensity (Vivid), ConsoleLayer (Foreground), SGR (Reset, SetColor), setSGR)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
 import System.IO.Error (ioeGetErrorString)
-import Utils (parseInt, showResults)
-
-solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8]
-
-solve :: Int -> String -> IO (String, String)
-solve 1 = Day01.solve
-solve 2 = Day02.solve
-solve 3 = Day03.solve
-solve 4 = Day04.solve
-solve 5 = Day05.solve
-solve 6 = Day06.solve
-solve 7 = Day07.solve
-solve 8 = Day08.solve
-solve _ = undefined
+import Utils (parseInt, readInputs, showResults)
 
 parseArgs :: [String] -> IO [Int]
 parseArgs [] = usage >> exitSuccess
@@ -44,15 +21,6 @@ usage :: IO ()
 usage = do
   putStrLn "Usage: AoC2022 [day]     run solution for days listed in [day]"
   putStrLn "       AoC2022 all       run all implemented solutions"
-
-readInputs :: Int -> IO String
-readInputs n = do
-  contentOrExc <- try $ readFile filepath :: IO (Either IOError String)
-  case contentOrExc of
-    Left _ -> fail $ "Could not read file: " ++ filepath
-    Right contents -> return contents
-  where
-    filepath = "input/Day" ++ show n ++ ".in"
 
 runSolution :: Int -> IO ()
 runSolution n = do

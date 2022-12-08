@@ -1,6 +1,6 @@
-module Utils (showResults, parseInt, pairMap, applyTuple, joinPair) where
+module Utils (showResults, parseInt, pairMap, applyTuple, joinPair, readInputs) where
 
-import System.Exit (exitFailure)
+import Control.Exception (try)
 
 showResults :: (String, String) -> String
 showResults (a, b) = "Part1: " ++ a ++ "\nPart2: " ++ b ++ "\n"
@@ -20,4 +20,13 @@ applyTuple (f, g) val = (f val, g val)
 parseInt :: String -> IO Int
 parseInt s = case reads s of
   [(i, [])] -> return i
-  _ -> putStrLn ("Could not parse integer: " ++ s) >> exitFailure
+  _ -> fail $ "Could not parse integer: " ++ s
+
+readInputs :: Int -> IO String
+readInputs n = do
+  contentOrExc <- try $ readFile filepath :: IO (Either IOError String)
+  case contentOrExc of
+    Left _ -> fail $ "Could not read file: " ++ filepath
+    Right contents -> return contents
+  where
+    filepath = "input/Day" ++ show n ++ ".in"

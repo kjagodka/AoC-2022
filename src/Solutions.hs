@@ -8,9 +8,10 @@ import qualified Day05 (solve)
 import qualified Day06 (solve)
 import qualified Day07 (solve)
 import qualified Day08 (solve)
+import qualified Day09 (solve)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8]
+solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 solve :: Int -> String -> IO (String, String)
 solve 1 = Day01.solve
@@ -21,6 +22,7 @@ solve 5 = Day05.solve
 solve 6 = Day06.solve
 solve 7 = Day07.solve
 solve 8 = Day08.solve
+solve 9 = Day09.solve
 solve _ = undefined
 
 examplesTestData :: [(Int, String, (String, String))]
@@ -100,6 +102,17 @@ examplesTestData =
       \33549\n\
       \35390\n",
       ("21", "8")
+    ),
+    ( 9,
+      "R 4\n\
+      \U 4\n\
+      \L 3\n\
+      \D 1\n\
+      \R 4\n\
+      \D 1\n\
+      \L 5\n\
+      \R 2\n",
+      ("13", "13")
     )
   ]
 

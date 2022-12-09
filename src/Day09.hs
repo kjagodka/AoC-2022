@@ -8,7 +8,7 @@ data Move = MUp | MDown | MLeft | MRight
 
 type Knot = (Int, Int)
 
-type Rope = [Knot] --(head, tail)
+type Rope = [Knot]
 
 parse :: String -> IO [Move]
 parse = fmap concat . mapM parseLine . lines

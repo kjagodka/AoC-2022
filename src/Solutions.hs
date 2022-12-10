@@ -9,9 +9,10 @@ import qualified Day06 (solve)
 import qualified Day07 (solve)
 import qualified Day08 (solve)
 import qualified Day09 (solve)
+import qualified Day10 (solve)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 solve :: Int -> String -> IO (String, String)
 solve 1 = Day01.solve
@@ -23,6 +24,7 @@ solve 6 = Day06.solve
 solve 7 = Day07.solve
 solve 8 = Day08.solve
 solve 9 = Day09.solve
+solve 10 = Day10.solve
 solve _ = undefined
 
 examplesTestData :: [(Int, String, (String, String))]
@@ -113,7 +115,154 @@ examplesTestData =
       \L 25\n\
       \U 20\n",
       ("88", "36")
-    )
+    ),
+    ( 10,
+      "addx 15\n\
+      \addx -11\n\
+      \addx 6\n\
+      \addx -3\n\
+      \addx 5\n\
+      \addx -1\n\
+      \addx -8\n\
+      \addx 13\n\
+      \addx 4\n\
+      \noop\n\
+      \addx -1\n\
+      \addx 5\n\
+      \addx -1\n\
+      \addx 5\n\
+      \addx -1\n\
+      \addx 5\n\
+      \addx -1\n\
+      \addx 5\n\
+      \addx -1\n\
+      \addx -35\n\
+      \addx 1\n\
+      \addx 24\n\
+      \addx -19\n\
+      \addx 1\n\
+      \addx 16\n\
+      \addx -11\n\
+      \noop\n\
+      \noop\n\
+      \addx 21\n\
+      \addx -15\n\
+      \noop\n\
+      \noop\n\
+      \addx -3\n\
+      \addx 9\n\
+      \addx 1\n\
+      \addx -3\n\
+      \addx 8\n\
+      \addx 1\n\
+      \addx 5\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \addx -36\n\
+      \noop\n\
+      \addx 1\n\
+      \addx 7\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \addx 2\n\
+      \addx 6\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \addx 1\n\
+      \noop\n\
+      \noop\n\
+      \addx 7\n\
+      \addx 1\n\
+      \noop\n\
+      \addx -13\n\
+      \addx 13\n\
+      \addx 7\n\
+      \noop\n\
+      \addx 1\n\
+      \addx -33\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \addx 2\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \addx 8\n\
+      \noop\n\
+      \addx -1\n\
+      \addx 2\n\
+      \addx 1\n\
+      \noop\n\
+      \addx 17\n\
+      \addx -9\n\
+      \addx 1\n\
+      \addx 1\n\
+      \addx -3\n\
+      \addx 11\n\
+      \noop\n\
+      \noop\n\
+      \addx 1\n\
+      \noop\n\
+      \addx 1\n\
+      \noop\n\
+      \noop\n\
+      \addx -13\n\
+      \addx -19\n\
+      \addx 1\n\
+      \addx 3\n\
+      \addx 26\n\
+      \addx -30\n\
+      \addx 12\n\
+      \addx -1\n\
+      \addx 3\n\
+      \addx 1\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \addx -9\n\
+      \addx 18\n\
+      \addx 1\n\
+      \addx 2\n\
+      \noop\n\
+      \noop\n\
+      \addx 9\n\
+      \noop\n\
+      \noop\n\
+      \noop\n\
+      \addx -1\n\
+      \addx 2\n\
+      \addx -37\n\
+      \addx 1\n\
+      \addx 3\n\
+      \noop\n\
+      \addx 15\n\
+      \addx -21\n\
+      \addx 22\n\
+      \addx -6\n\
+      \addx 1\n\
+      \noop\n\
+      \addx 2\n\
+      \addx 1\n\
+      \noop\n\
+      \addx -10\n\
+      \noop\n\
+      \noop\n\
+      \addx 20\n\
+      \addx 1\n\
+      \addx 2\n\
+      \addx 2\n\
+      \addx -6\n\
+      \addx -11\n\
+      \noop\n\
+      \noop",
+      ("13140", "13140"))
   ]
 
 fullTestsData :: [(Int, (String, String))]

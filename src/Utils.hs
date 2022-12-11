@@ -17,10 +17,10 @@ pairMap f (a, b) = (f a, f b)
 applyTuple :: (t -> a, t -> b) -> t -> (a, b)
 applyTuple (f, g) val = (f val, g val)
 
-parseInt :: String -> IO Int
+parseInt :: String -> Int
 parseInt s = case reads s of
-  [(i, [])] -> return i
-  _ -> fail $ "Could not parse integer: " ++ s
+  [(i, [])] -> i
+  _ -> error $ "Could not parse integer: " ++ s
 
 readInputs :: Int -> IO String
 readInputs n = do

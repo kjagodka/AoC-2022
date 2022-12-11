@@ -1,9 +1,10 @@
 module Day11 (solve) where
 
 import Data.List.Split (splitOn)
-import Data.Map (Map, adjust, findWithDefault, fromList, insert, keys)
+import Data.Map (Map, adjust, findWithDefault, fromList, insert, keys, elems)
 import Text.Read (readMaybe)
-import Utils (parseInt)
+import Data.List (sort)
+import Utils (parseInt, pairMap, applyTuple)
 
 type Item = Int
 
@@ -20,16 +21,19 @@ data Operand = Old | Val Item
 
 type Monkeys = Map MonkeyId Monkey
 
-parse :: String -> Monkeys
-parse = fromList . map parseMonkey . splitOn [""] . lines
+parse :: String -> (Monkeys, Int)
+parse input = 
+  let (monkeyKeys, divisors) = unzip . map parseMonkey . splitOn [""] . lines $ input
+      modulus = foldl lcm 1 divisors
+   in (fromList monkeyKeys, modulus)
   where
-    parseMonkey :: [String] -> (MonkeyId, Monkey)
+    parseMonkey :: [String] -> ((MonkeyId, Monkey), Int)
     parseMonkey [idStr, itemsStr, operationStr, testStr, ifTrueStr, ifFalseStr] =
       let mId = parseId idStr
           mItems = parseItems itemsStr
           mOperation = parseOperation operationStr
-          mTest = parseTest (testStr, ifTrueStr, ifFalseStr)
-       in (mId, Monkey mItems 0 mOperation mTest)
+          (mTest, divBy) = parseTest (testStr, ifTrueStr, ifFalseStr)
+       in ((mId, Monkey mItems 0 mOperation mTest), divBy)
     parseMonkey lns = error $ "Could not parse monkey:\n" ++ unlines lns
 
     parseId :: String -> MonkeyId
@@ -69,16 +73,16 @@ parse = fromList . map parseMonkey . splitOn [""] . lines
     parseOperator "*" = (*)
     parseOperator operatorStr = error $ "Could not parse operator: " ++ operatorStr
 
-    parseTest :: (String, String, String) -> (Item -> MonkeyId)
+    parseTest :: (String, String, String) -> (Item -> MonkeyId, Int)
     parseTest (testStr, ifTrueStr, ifFalseStr) = case map words [testStr, ifTrueStr, ifFalseStr] of
       [ ["Test:", "divisible", "by", divByStr],
         ["If", "true:", "throw", "to", "monkey", whenTrueStr],
-        ["If", "true:", "throw", "to", "monkey", whenFalseStr]
+        ["If", "false:", "throw", "to", "monkey", whenFalseStr]
         ] ->
           let divBy = parseInt divByStr
               whenTrue = parseInt whenTrueStr
               whenFalse = parseInt whenFalseStr
-           in (\item -> if item `mod` divBy == 0 then whenTrue else whenFalse)
+           in (\item -> if item `mod` divBy == 0 then whenTrue else whenFalse, divBy)
       _ -> error $ "Could not parse test:\n" ++ unlines [testStr, ifTrueStr, ifFalseStr]
 
 catchItem :: Item -> Monkey -> Monkey
@@ -87,8 +91,8 @@ catchItem i m = Monkey (items m ++ [i]) (inspected m) (operation m) (test m)
 throwItem :: Monkeys -> Item -> MonkeyId -> Monkeys
 throwItem monkeys i recipient = adjust (catchItem i) recipient monkeys
 
-execMonkey :: MonkeyId -> Monkeys -> Monkeys
-execMonkey monkeyId monkeys =
+execMonkey1 :: MonkeyId -> Monkeys -> Monkeys
+execMonkey1 monkeyId monkeys =
   if null (items monkey)
     then monkeys
     else
@@ -98,11 +102,37 @@ execMonkey monkeyId monkeys =
           monkey' = Monkey (tail $ items monkey) (inspected monkey + 1) (operation monkey) (test monkey)
           monkeys' = insert monkeyId monkey' monkeys
           monkeys'' = throwItem monkeys' item' recipient
-       in execMonkey monkeyId monkeys''
+       in execMonkey1 monkeyId monkeys''
   where
     monkey = findWithDefault (Monkey [] 0 id (const 0)) monkeyId monkeys
 
-execRound :: Monkeys -> Monkeys
-execRound monkeys = foldl (flip execMonkey) monkeys ids
+execMonkey2 :: Int -> MonkeyId -> Monkeys -> Monkeys
+execMonkey2 modulus monkeyId monkeys =
+  if null (items monkey)
+    then monkeys
+    else
+      let item = head $ items monkey
+          item' = operation monkey item `mod` modulus
+          recipient = test monkey item'
+          monkey' = Monkey (tail $ items monkey) (inspected monkey + 1) (operation monkey) (test monkey)
+          monkeys' = insert monkeyId monkey' monkeys
+          monkeys'' = throwItem monkeys' item' recipient
+       in execMonkey2 modulus monkeyId monkeys''
+  where
+    monkey = findWithDefault (Monkey [] 0 id (const 0)) monkeyId monkeys
+
+execRound :: (MonkeyId -> Monkeys -> Monkeys) -> Monkeys -> Monkeys
+execRound f monkeys = foldl (flip f) monkeys ids
   where ids = keys monkeys
-solve = parse
+
+getResult :: Monkeys -> Int
+getResult = product . take 2 . reverse . sort . map inspected . elems
+
+part1 :: (Monkeys, Int) -> Int
+part1 (monkeys, _)  = getResult . (!! 20) . iterate (execRound execMonkey1) $ monkeys
+
+part2 :: (Monkeys, Int) -> Int
+part2 (monkeys, modulus) = getResult . (!! 10000) . iterate (execRound (execMonkey2 modulus)) $ monkeys
+
+solve :: String -> (String, String)
+solve = pairMap show . applyTuple (part1, part2) . parse

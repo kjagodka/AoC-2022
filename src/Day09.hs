@@ -27,10 +27,8 @@ parse = fmap concat . mapM parseLine . lines
     parseMove mv = fail $ "Could not parse move: " ++ mv
 
 applyMove :: Rope -> Move -> Rope
-applyMove (h:t) m = result
+applyMove (h : t) m = scanl (flip follow) (moveHead h m) t
   where
-    result = moveHead h m : zipWith follow t result
-
     moveHead :: Knot -> Move -> Knot
     moveHead (hx, hy) MUp = (hx, hy + 1)
     moveHead (hx, hy) MDown = (hx, hy - 1)
@@ -40,21 +38,14 @@ applyMove (h:t) m = result
     follow :: Knot -> Knot -> Knot
     follow (tx, ty) (hx, hy)
       | areTouching (tx, ty) (hx, hy) = (tx, ty)
-      | tx == hx = (tx, towards ty hy)
-      | ty == hy = (towards tx hx, ty)
-      | otherwise = (towards tx hx, towards ty hy)
+      | otherwise = (tx + signum (hx - tx), ty + signum (hy - ty))
 
     areTouching :: Knot -> Knot -> Bool
     areTouching (tx, ty) (hx, hy) = max (abs (hx - tx)) (abs (hy - ty)) < 2
-
-    towards :: Int -> Int -> Int
-    towards from to = from + signum (to - from)
 applyMove [] _ = []
 
 simulateRope :: Rope -> [Move] -> [Rope]
-simulateRope initial moves = positions
-  where
-    positions = initial : zipWith applyMove positions moves
+simulateRope = scanl applyMove
 
 countTailPositions :: [Rope] -> Int
 countTailPositions = size . fromList . map last

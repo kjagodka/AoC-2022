@@ -2,7 +2,7 @@ module Day10 (solve) where
 
 import Data.Functor ((<&>))
 import Data.List.Split (chunksOf)
-import Utils (applyTuple, pairMap, parseInt)
+import Utils (applyTuple, parseInt)
 
 data Instruction = Noop | Addx Int
 

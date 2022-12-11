@@ -38,9 +38,9 @@ parse input =
 
     parseId :: String -> MonkeyId
     parseId idStr = case words idStr of
-      ["Monkey", id] ->
-        if last id == ':'
-          then parseInt $ init id
+      ["Monkey", monkeyID] ->
+        if last monkeyID == ':'
+          then parseInt $ init monkeyID
           else error $ "Could not pars monkeyId: " ++ idStr
       _ -> error $ "Could not pars monkeyId: " ++ idStr
 
@@ -91,33 +91,18 @@ catchItem i m = Monkey (items m ++ [i]) (inspected m) (operation m) (test m)
 throwItem :: Monkeys -> Item -> MonkeyId -> Monkeys
 throwItem monkeys i recipient = adjust (catchItem i) recipient monkeys
 
-execMonkey1 :: MonkeyId -> Monkeys -> Monkeys
-execMonkey1 monkeyId monkeys =
+execMonkey :: (Item -> Item) -> MonkeyId -> Monkeys -> Monkeys
+execMonkey f monkeyId monkeys =
   if null (items monkey)
     then monkeys
     else
       let item = head $ items monkey
-          item' = operation monkey item `div` 3
+          item' = f $ operation monkey item
           recipient = test monkey item'
           monkey' = Monkey (tail $ items monkey) (inspected monkey + 1) (operation monkey) (test monkey)
           monkeys' = insert monkeyId monkey' monkeys
           monkeys'' = throwItem monkeys' item' recipient
-       in execMonkey1 monkeyId monkeys''
-  where
-    monkey = findWithDefault (Monkey [] 0 id (const 0)) monkeyId monkeys
-
-execMonkey2 :: Int -> MonkeyId -> Monkeys -> Monkeys
-execMonkey2 modulus monkeyId monkeys =
-  if null (items monkey)
-    then monkeys
-    else
-      let item = head $ items monkey
-          item' = operation monkey item `mod` modulus
-          recipient = test monkey item'
-          monkey' = Monkey (tail $ items monkey) (inspected monkey + 1) (operation monkey) (test monkey)
-          monkeys' = insert monkeyId monkey' monkeys
-          monkeys'' = throwItem monkeys' item' recipient
-       in execMonkey2 modulus monkeyId monkeys''
+       in execMonkey f monkeyId monkeys''
   where
     monkey = findWithDefault (Monkey [] 0 id (const 0)) monkeyId monkeys
 
@@ -129,10 +114,10 @@ getResult :: Monkeys -> Int
 getResult = product . take 2 . reverse . sort . map inspected . elems
 
 part1 :: (Monkeys, Int) -> Int
-part1 (monkeys, _)  = getResult . (!! 20) . iterate (execRound execMonkey1) $ monkeys
+part1 (monkeys, _)  = getResult . (!! 20) . iterate (execRound (execMonkey (`div` 3))) $ monkeys
 
 part2 :: (Monkeys, Int) -> Int
-part2 (monkeys, modulus) = getResult . (!! 10000) . iterate (execRound (execMonkey2 modulus)) $ monkeys
+part2 (monkeys, modulus) = getResult . (!! 10000) . iterate (execRound (execMonkey (`mod` modulus))) $ monkeys
 
 solve :: String -> (String, String)
 solve = pairMap show . applyTuple (part1, part2) . parse

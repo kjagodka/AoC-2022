@@ -1,8 +1,8 @@
 module Day07 (solve) where
 
-import Data.Functor ((<&>))
-import Data.Map as M (Map, adjust, empty, foldl, insert)
-import Utils (applyTuple, parseInt)
+import Data.Map(Map, adjust, empty, insert)
+import qualified Data.Map as M (foldl)
+import Utils (applyTuple, parseInt, pairMap)
 
 type Entry = (String, Object)
 
@@ -14,20 +14,20 @@ type Path = [String]
 
 data TermLine = CD String | CDOut | CDRoot | LS | Output Entry
 
-parse :: String -> IO FileSystem
-parse str = mapM parseLine (lines str) <&> fst . Prelude.foldl applyTermLine (Directory M.empty, [])
+parse :: String -> FileSystem
+parse = fst . foldl applyTermLine (Directory empty, []) . map parseLine . lines
   where
-    parseLine :: String -> IO TermLine
+    parseLine :: String -> TermLine
     parseLine line = case words line of
-      ["$", "cd", ".."] -> return CDOut
-      ["$", "cd", "/"] -> return CDRoot
-      ["$", "cd", dir] -> return $ CD dir
-      ["$", "ls"] -> return LS
-      ["dir", name] -> return . Output $ (name, Directory M.empty)
+      ["$", "cd", ".."] -> CDOut
+      ["$", "cd", "/"] -> CDRoot
+      ["$", "cd", dir] -> CD dir
+      ["$", "ls"] -> LS
+      ["dir", name] -> Output (name, Directory empty)
       [sizeStr, name] -> do
-        fSize <- parseInt sizeStr
-        return . Output $ (name, File fSize)
-      _ -> fail $ "Could not parse terminal line: " ++ line
+        let fSize = parseInt sizeStr
+         in Output (name, File fSize)
+      _ -> error $ "Could not parse terminal line: " ++ line
 
     applyTermLine :: (FileSystem, Path) -> TermLine -> (FileSystem, Path)
     applyTermLine (fs, path) (CD dir) = (fs, path ++ [dir])
@@ -57,7 +57,5 @@ part2 capacity required fs = minimum . filter (threshold <=) . map discSize . di
   where
     threshold = discSize fs - (capacity - required)
 
-solve :: String -> IO (String, String)
-solve input =
-  parse input
-    <&> applyTuple (show . part1 100000, show . part2 70000000 30000000)
+solve :: String -> (String, String)
+solve = pairMap show . applyTuple (part1 100000, part2 70000000 30000000) . parse

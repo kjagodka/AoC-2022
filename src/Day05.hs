@@ -1,12 +1,11 @@
 module Day05 (solve) where
 
-import Control.Monad (foldM)
 import Data.Char (isLetter)
-import Data.Functor ((<&>))
 import Data.List (transpose)
 import Data.List.Split (chunksOf, splitOn, wordsBy)
-import Data.Map as Map (Map, adjust, elems, findWithDefault, fromAscList, map, size)
-import Utils (applyTuple, joinPair, parseInt)
+import Data.Map as Map (Map, adjust, elems, findWithDefault, fromAscList, size)
+import qualified Data.Map as Map (map)
+import Utils (applyTuple, parseInt)
 
 data Crate = Empty | Crate Char
   deriving (Eq, Show)
@@ -17,96 +16,94 @@ type Cargo = Map Int Stack
 
 type Move = (Int, Int, Int) --(count, from, to)
 
-parse :: String -> IO (Cargo, [Move])
+parse :: String -> (Cargo, [Move])
 parse s = case splitOn [""] . lines $ s of
-  [cargoPart, movesPart] -> do
-    cargo <- parseCargo cargoPart
-    moves <- mapM (parseMove $ size cargo) movesPart
-    return (cargo, moves)
-  _ -> fail $ "Could not parse input:\n" ++ s
+  [cargoPart, movesPart] ->
+    let cargo = parseCargo cargoPart
+        moves = map (parseMove $ size cargo) movesPart
+     in (cargo, moves)
+  _ -> error $ "Could not parse input:\n" ++ s
   where
-    parseCargo :: [String] -> IO Cargo
+    parseCargo :: [String] -> Cargo
     parseCargo lns = case reverse lns of
-      [] -> fail "Unable to parsy empty cargo description"
-      legend : rows -> do
-        legend' <- parseLegend legend
-        stacks <- mapM (parseRow $ length legend') rows >>= mapM (verifyStack . reverse) . transpose <&> Prelude.map removeEmpty
-        return $ fromAscList (zip [1 ..] stacks)
+      [] -> error "Unable to parsy empty cargo description"
+      legend : rows ->
+        let legend' = parseLegend legend
+            stacks = map (removeEmpty . verifyStack . reverse) . transpose . map (parseRow $ length legend') $ rows
+         in fromAscList (zip [1 ..] stacks)
 
-    verifyStack :: Stack -> IO Stack
+    verifyStack :: Stack -> Stack
     verifyStack stack =
       let countEmpty = length $ filter (== Empty) stack
        in if take countEmpty stack == replicate countEmpty Empty
-            then return $ filter (/= Empty) stack
-            else fail "Stack contains empty spots under crates"
+            then filter (/= Empty) stack
+            else error "Stack contains empty spots under crates"
 
     removeEmpty :: Stack -> Stack
     removeEmpty = filter (/= Empty)
 
-    parseLegend :: String -> IO [Int]
-    parseLegend str = mapM parseInt (wordsBy (== ' ') str)
+    parseLegend :: String -> [Int]
+    parseLegend = map parseInt . wordsBy (== ' ')
 
-    parseRow :: Int -> String -> IO [Crate]
-    parseRow expSize str = (mapM parseCrate . chunksOf 4 $ str ++ " ") >>= verifyRow
+    parseRow :: Int -> String -> [Crate]
+    parseRow expSize str = verifyRow . map parseCrate . chunksOf 4 $ str ++ " "
       where
         verifyRow crates =
           if length crates == expSize
-            then return crates
-            else fail $ "Could not parse row of cargo: " ++ str ++ "\n. Expected size: " ++ show expSize ++ "Actual size: " ++ show (length crates)
+            then crates
+            else error $ "Could not parse row of cargo: " ++ str ++ "\n. Expected size: " ++ show expSize ++ "Actual size: " ++ show (length crates)
 
-    parseCrate :: String -> IO Crate
-    parseCrate "    " = return Empty
+    parseCrate :: String -> Crate
+    parseCrate "    " = Empty
     parseCrate cr@['[', c, ']', ' '] =
       if isLetter c
-        then return $ Crate c
-        else fail $ "Could not parse crate: " ++ cr
-    parseCrate cr = fail $ "Could not parse crate: " ++ cr
+        then Crate c
+        else error $ "Could not parse crate: " ++ cr
+    parseCrate cr = error $ "Could not parse crate: " ++ cr
 
-    parseMove :: Int -> String -> IO Move
+    parseMove :: Int -> String -> Move
     parseMove expSize mv = case splitOn [' '] mv of
-      ["move", a, "from", b, "to", c] -> do
-        a' <- parseInt a
-        b' <- parseInt b
-        c' <- parseInt c
-        if a' > 0 && 1 <= b' && b' <= expSize && 1 <= c' && c' <= expSize
-          then return (a', b', c')
-          else fail $ "Encountered integer out of range, when parsing move: " ++ mv
-      _ -> fail $ "Could not parse move: " ++ mv
+      ["move", a, "from", b, "to", c] ->
+        let a' = parseInt a
+            b' = parseInt b
+            c' = parseInt c
+         in if a' > 0 && 1 <= b' && b' <= expSize && 1 <= c' && c' <= expSize
+              then (a', b', c')
+              else error $ "Encountered integer out of range, when parsing move: " ++ mv
+      _ -> error $ "Could not parse move: " ++ mv
 
-makeMove1 :: (MonadFail m) => Cargo -> Move -> m Cargo
-makeMove1 cargo move@(count, from, to) = takeFrom <&> dropAt
+makeMove1 :: Cargo -> Move -> Cargo
+makeMove1 cargo move@(count, from, to) = dropAt takeFrom
   where
     takeFrom =
       let orig = findWithDefault [] from cargo
        in if (< count) . length $ orig
-            then fail $ "Not enough crates in stack to make move" ++ show move
-            else return (adjust (drop count) from cargo, take count orig)
+            then error $ "Not enough crates in stack to make move" ++ show move
+            else (adjust (drop count) from cargo, take count orig)
     dropAt (cargo', stack) = adjust (reverse stack ++) to cargo'
 
-makeMove2 :: (MonadFail m) => Cargo -> Move -> m Cargo
-makeMove2 cargo move@(count, from, to) = takeFrom <&> dropAt
+makeMove2 :: Cargo -> Move -> Cargo
+makeMove2 cargo move@(count, from, to) = dropAt takeFrom
   where
     takeFrom =
       let orig = findWithDefault [] from cargo
        in if (< count) . length $ orig
-            then fail $ "Not enough crates in stack to make move" ++ show move
-            else return (adjust (drop count) from cargo, take count orig)
+            then error $ "Not enough crates in stack to make move" ++ show move
+            else (adjust (drop count) from cargo, take count orig)
     dropAt (cargo', stack) = adjust (stack ++) to cargo'
 
-crateToChar :: MonadFail m => Crate -> m Char
-crateToChar Empty = fail "Tried to show empty"
-crateToChar (Crate c) = return c
+crateToChar :: Crate -> Char
+crateToChar Empty = error "Tried to show empty"
+crateToChar (Crate c) = c
 
-solvePart :: (MonadFail m) => (Cargo -> Move -> m Cargo) -> (Cargo, [Move]) -> m String
-solvePart f (cargo, moves) =
-  foldM f cargo moves
-    >>= mapM crateToChar . elems . Map.map head
+solvePart :: (Cargo -> Move -> Cargo) -> (Cargo, [Move]) -> String
+solvePart f (cargo, moves) = map crateToChar . elems . Map.map head $ foldl f cargo moves
 
-part1 :: (Cargo, [Move]) -> IO String
+part1 :: (Cargo, [Move]) -> String
 part1 = solvePart makeMove1
 
-part2 :: (Cargo, [Move]) -> IO String
+part2 :: (Cargo, [Move]) -> String
 part2 = solvePart makeMove2
 
-solve :: String -> IO (String, String)
-solve input = parse input >>= joinPair . applyTuple (part1, part2)
+solve :: String -> (String, String)
+solve = applyTuple (part1, part2) . parse

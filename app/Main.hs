@@ -1,16 +1,16 @@
 import Control.Exception (try)
-import Control.Monad ((>=>))
 import Solutions (solve, solvedDays)
 import System.Console.ANSI (Color (Red), ColorIntensity (Vivid), ConsoleLayer (Foreground), SGR (Reset, SetColor), setSGR)
 import System.Environment (getArgs)
 import System.Exit (exitFailure, exitSuccess)
 import System.IO.Error (ioeGetErrorString)
 import Utils (parseInt, readInputs, showResults)
+import Data.Functor ( (<&>) )
 
 parseArgs :: [String] -> IO [Int]
 parseArgs [] = usage >> exitSuccess
 parseArgs ["all"] = return solvedDays
-parseArgs s = mapM (parseInt >=> verify) s
+parseArgs s = mapM (verify . parseInt) s
   where
     verify i =
       if i `elem` solvedDays
@@ -25,7 +25,7 @@ usage = do
 runSolution :: Int -> IO ()
 runSolution n = do
   putStrLn $ "Day " ++ show n
-  resultsOrError <- try (readInputs n >>= solve n) :: IO (Either IOError (String, String))
+  resultsOrError <- try (readInputs n <&> solve n) :: IO (Either IOError (String, String))
   case resultsOrError of
     Right result -> putStrLn $ showResults result
     Left e -> do

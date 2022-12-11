@@ -1,6 +1,5 @@
 module Day10 (solve) where
 
-import Data.Functor ((<&>))
 import Data.List.Split (chunksOf)
 import Utils (applyTuple, parseInt)
 
@@ -8,16 +7,16 @@ data Instruction = Noop | Addx Int
 
 type State = Int
 
-parse :: String -> IO [Instruction]
-parse = fmap concat . mapM parseLine . lines
+parse :: String -> [Instruction]
+parse = concatMap parseLine . lines
   where
-    parseLine :: String -> IO [Instruction]
+    parseLine :: String -> [Instruction]
     parseLine line = case words line of
-      ["noop"] -> return [Noop]
+      ["noop"] -> [Noop]
       ["addx", n] -> do
-        n' <- parseInt n
-        return [Noop, Addx n'] --for simplicity i assume Addx takes one cycle, adding Noop before
-      _ -> fail $ "Could not parse instruction: " ++ line
+        let n' = parseInt n
+         in [Noop, Addx n'] --for simplicity i assume Addx takes one cycle, adding Noop before
+      _ -> error $ "Could not parse instruction: " ++ line
 
 executeInstruction :: Instruction -> State -> State
 executeInstruction Noop = id
@@ -40,5 +39,5 @@ part2 ins = '\n' : unlines rows
       | abs (state - cpuCycle) <= 1 = '#'
       | otherwise = '.'
 
-solve :: String -> IO (String, String)
-solve input = parse input <&> applyTuple (show . part1, part2)
+solve :: String -> (String, String)
+solve = applyTuple (show . part1, part2) . parse

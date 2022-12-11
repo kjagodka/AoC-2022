@@ -1,7 +1,8 @@
 module Day10 (solve) where
 
-import Data.Functor ( (<&>) ) 
-import Utils (parseInt, applyTuple, pairMap)
+import Data.Functor ((<&>))
+import Data.List.Split (chunksOf)
+import Utils (applyTuple, pairMap, parseInt)
 
 data Instruction = Noop | Addx Int
 
@@ -23,13 +24,21 @@ executeInstruction Noop = id
 executeInstruction (Addx n) = (n +)
 
 simulateProgram :: [Instruction] -> [State]
-simulateProgram ins = states
-  where states = 1 : zipWith executeInstruction ins states
+simulateProgram = scanl (flip executeInstruction) 1
 
 part1 :: [Instruction] -> Int
-part1 = sum . map (uncurry (*)) . filter (\(i, _) -> i `mod` 40 == 20) . zip [1..] . simulateProgram 
+part1 = sum . map (uncurry (*)) . filter (\(i, _) -> i `mod` 40 == 20) . zip [1 ..] . simulateProgram
 
-part2 :: [Instruction] -> Int
-part2 = part1
+part2 :: [Instruction] -> String
+part2 ins = '\n' : unlines rows
+  where
+    sections = take 6 . chunksOf 40 $ simulateProgram ins
+    rows = map (zipWith drawSprite [0 ..]) sections
 
-solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show
+    drawSprite :: Int -> State -> Char
+    drawSprite cpuCycle state
+      | abs (state - cpuCycle) <= 1 = '#'
+      | otherwise = '.'
+
+solve :: String -> IO (String, String)
+solve input = parse input <&> applyTuple (show . part1, part2)

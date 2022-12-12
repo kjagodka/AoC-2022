@@ -1,27 +1,28 @@
 module Day04 (solve) where
 
+import Data.Functor ((<&>))
 import Data.List.Split (splitOn)
 import Utils (applyTuple, pairMap, parseInt)
 
 type Assignment = (Int, Int)
 
-parse :: String -> [(Assignment, Assignment)]
-parse = map parseLine . lines
+parse :: MonadFail m => String -> m [(Assignment, Assignment)]
+parse = mapM parseLine . lines
   where
     parseAssignment str = case splitOn ['-'] str of
-      [begin, end] ->
-        let begin' = parseInt begin
-            end' = parseInt end
-         in if begin' <= end'
-              then (begin', end')
-              else error $ "Wrong ordering of assignment: " ++ str
-      _ -> error $ "Could not parse assignment: " ++ str
+      [begin, end] -> do
+        begin' <- parseInt begin
+        end' <- parseInt end
+        if begin' <= end'
+          then return (begin', end')
+          else fail $ "Wrong ordering of assignment: " ++ str
+      _ -> fail $ "Could not parse assignment: " ++ str
     parseLine line = case splitOn [','] line of
-      [a, b] ->
-        let a' = parseAssignment a
-            b' = parseAssignment b
-         in (a', b')
-      _ -> error $ "Could not parse line: " ++ line
+      [a, b] -> do
+        a' <- parseAssignment a
+        b' <- parseAssignment b
+        return (a', b')
+      _ -> fail $ "Could not parse line: " ++ line
 
 isContaining :: Assignment -> Assignment -> Bool
 isContaining a b = isInside a b || isInside b a
@@ -41,5 +42,5 @@ part1 = length . filter (uncurry isContaining)
 part2 :: [(Assignment, Assignment)] -> Int
 part2 = length . filter (uncurry isOverlapping)
 
-solve :: String -> (String, String)
-solve = pairMap show . applyTuple (part1, part2) . parse
+solve :: MonadFail m => String -> m (String, String)
+solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

@@ -5,6 +5,7 @@ import Data.Map (Map, adjust, findWithDefault, fromList, insert, keys, elems)
 import Text.Read (readMaybe)
 import Data.List (sort)
 import Utils (parseInt, pairMap, applyTuple)
+import Data.Functor ( (<&>) )
 
 type Item = Int
 
@@ -21,69 +22,69 @@ data Operand = Old | Val Item
 
 type Monkeys = Map MonkeyId Monkey
 
-parse :: String -> (Monkeys, Int)
-parse input = 
-  let (monkeyKeys, divisors) = unzip . map parseMonkey . splitOn [""] . lines $ input
-      modulus = foldl lcm 1 divisors
-   in (fromList monkeyKeys, modulus)
+parse :: MonadFail m => String -> m (Monkeys, Int)
+parse input = do
+  (monkeyKeys, divisors) <- fmap unzip . mapM parseMonkey . splitOn [""] . lines $ input
+  let modulus = foldl lcm 1 divisors
+   in return (fromList monkeyKeys, modulus)
   where
-    parseMonkey :: [String] -> ((MonkeyId, Monkey), Int)
-    parseMonkey [idStr, itemsStr, operationStr, testStr, ifTrueStr, ifFalseStr] =
-      let mId = parseId idStr
-          mItems = parseItems itemsStr
-          mOperation = parseOperation operationStr
-          (mTest, divBy) = parseTest (testStr, ifTrueStr, ifFalseStr)
-       in ((mId, Monkey mItems 0 mOperation mTest), divBy)
-    parseMonkey lns = error $ "Could not parse monkey:\n" ++ unlines lns
+    parseMonkey :: MonadFail m => [String] -> m ((MonkeyId, Monkey), Int)
+    parseMonkey [idStr, itemsStr, operationStr, testStr, ifTrueStr, ifFalseStr] = do
+      mId <- parseId idStr
+      mItems <- parseItems itemsStr
+      mOperation <- parseOperation operationStr
+      (mTest, divBy) <- parseTest (testStr, ifTrueStr, ifFalseStr)
+      return ((mId, Monkey mItems 0 mOperation mTest), divBy)
+    parseMonkey lns = fail $ "Could not parse monkey:\n" ++ unlines lns
 
-    parseId :: String -> MonkeyId
+    parseId :: MonadFail m => String -> m MonkeyId
     parseId idStr = case words idStr of
       ["Monkey", monkeyID] ->
         if last monkeyID == ':'
           then parseInt $ init monkeyID
-          else error $ "Could not pars monkeyId: " ++ idStr
-      _ -> error $ "Could not pars monkeyId: " ++ idStr
+          else fail $ "Could not pars monkeyId: " ++ idStr
+      _ -> fail $ "Could not pars monkeyId: " ++ idStr
 
-    parseItems :: String -> [Item]
+    parseItems :: MonadFail m => String -> m [Item]
     parseItems itemsStr = case words itemsStr of
       "Starting" : "items:" : ns -> case readMaybe $ "[" ++ unwords ns ++ "]" of
-        Just x -> x
-        Nothing -> error $ "Could not parse monkey items: " ++ itemsStr
-      _ -> error $ "Could not parse monkey items: " ++ itemsStr
+        Just x -> return x
+        Nothing -> fail $ "Could not parse monkey items: " ++ itemsStr
+      _ -> fail $ "Could not parse monkey items: " ++ itemsStr
 
-    parseOperation :: String -> (Item -> Item)
+    parseOperation :: MonadFail m => String -> m (Item -> Item)
     parseOperation operationStr = case words operationStr of
-      ["Operation:", "new", "=", operand1Str, operatorStr, operand2Str] ->
-        let operand1 = parseOperand operand1Str
-            operator = parseOperator operatorStr
-            operand2 = parseOperand operand2Str
-         in (\old -> eval operand1 old `operator` eval operand2 old)
-      _ -> error $ "Could not parse operation: " ++ operationStr
+      ["Operation:", "new", "=", operand1Str, operatorStr, operand2Str] -> do
+        operand1 <- parseOperand operand1Str
+        operator <- parseOperator operatorStr
+        operand2 <- parseOperand operand2Str
+        return (\old -> eval operand1 old `operator` eval operand2 old)
+      _ -> fail $ "Could not parse operation: " ++ operationStr
       where
         eval :: Operand -> Item -> Item
         eval Old i = i
         eval (Val n) _ = n
 
-    parseOperand :: String -> Operand
-    parseOperand "old" = Old
-    parseOperand valStr = Val $ parseInt valStr
+    parseOperand :: MonadFail m => String -> m Operand
+    parseOperand "old" = return Old
+    parseOperand valStr = Val <$> parseInt valStr
 
-    parseOperator :: String -> (Item -> Item -> Item)
-    parseOperator "+" = (+)
-    parseOperator "*" = (*)
-    parseOperator operatorStr = error $ "Could not parse operator: " ++ operatorStr
+    parseOperator :: MonadFail m => String -> m (Item -> Item -> Item)
+    parseOperator "+" = return (+)
+    parseOperator "*" = return (*)
+    parseOperator operatorStr = fail $ "Could not parse operator: " ++ operatorStr
 
-    parseTest :: (String, String, String) -> (Item -> MonkeyId, Int)
+    parseTest :: MonadFail m => (String, String, String) -> m (Item -> MonkeyId, Int)
     parseTest (testStr, ifTrueStr, ifFalseStr) = case map words [testStr, ifTrueStr, ifFalseStr] of
       [ ["Test:", "divisible", "by", divByStr],
         ["If", "true:", "throw", "to", "monkey", whenTrueStr],
         ["If", "false:", "throw", "to", "monkey", whenFalseStr]
-        ] ->
-          let divBy = parseInt divByStr
-              whenTrue = parseInt whenTrueStr
-              whenFalse = parseInt whenFalseStr
-           in (\item -> if item `mod` divBy == 0 then whenTrue else whenFalse, divBy)
-      _ -> error $ "Could not parse test:\n" ++ unlines [testStr, ifTrueStr, ifFalseStr]
+        ] -> do
+          divBy <- parseInt divByStr
+          whenTrue <- parseInt whenTrueStr
+          whenFalse <- parseInt whenFalseStr
+          return (\item -> if item `mod` divBy == 0 then whenTrue else whenFalse, divBy)
+      _ -> fail $ "Could not parse test:\n" ++ unlines [testStr, ifTrueStr, ifFalseStr]
 
 catchItem :: Item -> Monkey -> Monkey
 catchItem i m = Monkey (items m ++ [i]) (inspected m) (operation m) (test m)
@@ -119,5 +120,5 @@ part1 (monkeys, _)  = getResult . (!! 20) . iterate (execRound (execMonkey (`div
 part2 :: (Monkeys, Int) -> Int
 part2 (monkeys, modulus) = getResult . (!! 10000) . iterate (execRound (execMonkey (`mod` modulus))) $ monkeys
 
-solve :: String -> (String, String)
-solve = pairMap show . applyTuple (part1, part2) . parse
+solve :: MonadFail m => String -> m (String, String)
+solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

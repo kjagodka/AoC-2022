@@ -15,7 +15,7 @@ import qualified Day11 (solve)
 solvedDays :: [Int]
 solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
-solve :: Int -> String -> (String, String)
+solve :: MonadFail m => Int -> String -> m (String, String)
 solve 1 = Day01.solve
 solve 2 = Day02.solve
 solve 3 = Day03.solve

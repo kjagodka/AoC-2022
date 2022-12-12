@@ -1,8 +1,8 @@
 module Day07 (solve) where
 
-import Data.Map(Map, adjust, empty, insert)
-import qualified Data.Map as M (foldl)
-import Utils (applyTuple, parseInt, pairMap)
+import Data.Functor ((<&>))
+import Data.Map as M (Map, adjust, empty, foldl, insert)
+import Utils (applyTuple, parseInt)
 
 type Entry = (String, Object)
 
@@ -14,20 +14,20 @@ type Path = [String]
 
 data TermLine = CD String | CDOut | CDRoot | LS | Output Entry
 
-parse :: String -> FileSystem
-parse = fst . foldl applyTermLine (Directory empty, []) . map parseLine . lines
+parse :: MonadFail m => String -> m FileSystem
+parse str = mapM parseLine (lines str) <&> fst . Prelude.foldl applyTermLine (Directory M.empty, [])
   where
-    parseLine :: String -> TermLine
+    parseLine :: MonadFail m => String -> m TermLine
     parseLine line = case words line of
-      ["$", "cd", ".."] -> CDOut
-      ["$", "cd", "/"] -> CDRoot
-      ["$", "cd", dir] -> CD dir
-      ["$", "ls"] -> LS
-      ["dir", name] -> Output (name, Directory empty)
+      ["$", "cd", ".."] -> return CDOut
+      ["$", "cd", "/"] -> return CDRoot
+      ["$", "cd", dir] -> return $ CD dir
+      ["$", "ls"] -> return LS
+      ["dir", name] -> return . Output $ (name, Directory M.empty)
       [sizeStr, name] -> do
-        let fSize = parseInt sizeStr
-         in Output (name, File fSize)
-      _ -> error $ "Could not parse terminal line: " ++ line
+        fSize <- parseInt sizeStr
+        return . Output $ (name, File fSize)
+      _ -> fail $ "Could not parse terminal line: " ++ line
 
     applyTermLine :: (FileSystem, Path) -> TermLine -> (FileSystem, Path)
     applyTermLine (fs, path) (CD dir) = (fs, path ++ [dir])
@@ -57,5 +57,7 @@ part2 capacity required fs = minimum . filter (threshold <=) . map discSize . di
   where
     threshold = discSize fs - (capacity - required)
 
-solve :: String -> (String, String)
-solve = pairMap show . applyTuple (part1 100000, part2 70000000 30000000) . parse
+solve :: MonadFail m => String -> m (String, String)
+solve input =
+  parse input
+    <&> applyTuple (show . part1 100000, show . part2 70000000 30000000)

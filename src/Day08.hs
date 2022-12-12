@@ -1,25 +1,26 @@
 module Day08 (solve) where
 
 import Data.Char (isDigit)
+import Data.Functor ((<&>))
 import Data.List (find, mapAccumL, mapAccumR, transpose)
 import Data.Maybe (fromMaybe)
 import Utils (applyTuple, pairMap)
 
-parse :: String -> [[Int]]
+parse :: MonadFail m => String -> m [[Int]]
 parse str = do
-  let result = map parseLine . lines $ str
-   in if and . zipWith (\a b -> length a == length b) result $ tail result
-        then result
-        else error $ "Error, not all tree rows have same height in input:\n" ++ str
+  result <- mapM parseLine . lines $ str
+  if and . zipWith (\a b -> length a == length b) result $ tail result
+    then return result
+    else fail $ "Error, not all tree rows have same height in input:\n" ++ str
   where
-    parseLine :: String -> [Int]
-    parseLine = map parseChar
+    parseLine :: MonadFail m => String -> m [Int]
+    parseLine = mapM parseChar
 
-    parseChar :: Char -> Int
+    parseChar :: MonadFail m => Char -> m Int
     parseChar c =
       if isDigit c
-        then fromEnum c - fromEnum '0'
-        else error $ "Could not parse character: '" ++ [c] ++ "' as tree height"
+        then return $ fromEnum c - fromEnum '0'
+        else fail $ "Could not parse character: '" ++ [c] ++ "' as tree height"
 
 visible :: [[Int]] -> [[Bool]]
 visible trees =
@@ -60,5 +61,5 @@ part1 = sum . map (length . filter id) . visible
 part2 :: [[Int]] -> Int
 part2 = maximum . map maximum . score
 
-solve :: String -> (String, String)
-solve = pairMap show . applyTuple (part1, part2) . parse
+solve :: MonadFail m => String -> m (String, String)
+solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

@@ -1,5 +1,6 @@
 module Day09 (solve) where
-  
+
+import Data.Functor ((<&>))
 import Data.Set (fromList, size)
 import Utils (applyTuple, pairMap, parseInt)
 
@@ -9,21 +10,21 @@ type Knot = (Int, Int)
 
 type Rope = [Knot]
 
-parse :: String -> [Move]
-parse = concatMap parseLine . lines
+parse :: MonadFail m => String -> m [Move]
+parse = fmap concat . mapM parseLine . lines
   where
     parseLine line = case words line of
-      [dir, n] ->
-        let dir' = parseMove dir
-            n' =  parseInt n
-         in replicate n' dir'
-      _ -> error $ "Could not parse line: " ++ line
+      [dir, n] -> do
+        dir' <- parseMove dir
+        n' <- parseInt n
+        return $ replicate n' dir'
+      _ -> fail $ "Could not parse line: " ++ line
 
-    parseMove "U" = MUp
-    parseMove "D" = MDown
-    parseMove "L" = MLeft
-    parseMove "R" = MRight
-    parseMove mv = error $ "Could not parse move: " ++ mv
+    parseMove "U" = return MUp
+    parseMove "D" = return MDown
+    parseMove "L" = return MLeft
+    parseMove "R" = return MRight
+    parseMove mv = fail $ "Could not parse move: " ++ mv
 
 applyMove :: Rope -> Move -> Rope
 applyMove (h : t) m = scanl (flip follow) (moveHead h m) t
@@ -55,5 +56,5 @@ part1 = countTailPositions . simulateRope (replicate 2 (0, 0))
 part2 :: [Move] -> Int
 part2 = countTailPositions . simulateRope (replicate 10 (0, 0))
 
-solve :: String -> (String, String)
-solve = pairMap show . applyTuple (part1, part2) . parse
+solve :: MonadFail m => String -> m (String, String)
+solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

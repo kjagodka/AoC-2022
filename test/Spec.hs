@@ -21,6 +21,6 @@ generateTestPair testName ioOutput (exp1, exp2) = do
 
 main :: IO ()
 main = do
-  exampleTests <- mapM (\(n, input, expOutput) -> generateTestPair ("Day" ++ show n) (return $ solve n input) expOutput) examplesTestData <&> testGroup "Examples" . concat
-  fullTests <- mapM (\(n, expOutput) -> generateTestPair ("Day" ++ show n) (readInputs n <&> solve n) expOutput) fullTestsData <&> testGroup "Full" . concat
+  exampleTests <- mapM (\(n, input, expOutput) -> generateTestPair ("Day" ++ show n) (solve n input) expOutput) examplesTestData <&> testGroup "Examples" . concat
+  fullTests <- mapM (\(n, expOutput) -> generateTestPair ("Day" ++ show n) (readInputs n >>= solve n) expOutput) fullTestsData <&> testGroup "Full" . concat
   defaultMain $ testGroup "All" [exampleTests, fullTests]

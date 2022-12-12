@@ -1,49 +1,50 @@
 module Day02 (solve) where
 
+import Data.Functor ((<&>))
 import Data.List.Split (splitOn)
-import Utils (pairMap, applyTuple)
+import Utils (pairMap)
 
 data HandShape = Rock | Paper | Scissors
 
 data GameResult = Win | Draw | Loss
   deriving (Eq)
 
-parseHandShape :: String -> HandShape
-parseHandShape "A" = Rock
-parseHandShape "B" = Paper
-parseHandShape "C" = Scissors
-parseHandShape "X" = Rock
-parseHandShape "Y" = Paper
-parseHandShape "Z" = Scissors
-parseHandShape s = error $ "Could not parse handShape: " ++ s
+parseHandShape :: MonadFail m => String -> m HandShape
+parseHandShape "A" = return Rock
+parseHandShape "B" = return Paper
+parseHandShape "C" = return Scissors
+parseHandShape "X" = return Rock
+parseHandShape "Y" = return Paper
+parseHandShape "Z" = return Scissors
+parseHandShape s = fail $ "Could not parse handShape: " ++ s
 
-parseGameResult :: String -> GameResult
-parseGameResult "X" = Loss
-parseGameResult "Y" = Draw
-parseGameResult "Z" = Win
-parseGameResult s = error $ "Could not parse gameResult: " ++ s
+parseGameResult :: MonadFail m => String -> m GameResult
+parseGameResult "X" = return Loss
+parseGameResult "Y" = return Draw
+parseGameResult "Z" = return Win
+parseGameResult s = fail $ "Could not parse gameResult: " ++ s
 
-parsePart1 :: String -> [(HandShape, HandShape)]
-parsePart1 = map parseLine . lines
+parsePart1 :: MonadFail m => String -> m [(HandShape, HandShape)]
+parsePart1 = mapM parseLine . lines
   where
     parseLine s =
       case splitOn [' '] s of
-        [a, b] ->
-          let a' = parseHandShape a
-              b' = parseHandShape b
-           in (a', b')
-        _ -> error $ "Could not parse line: \"" ++ s ++ "\" as pair of handShapes"
+        [a, b] -> do
+          a' <- parseHandShape a
+          b' <- parseHandShape b
+          return (a', b')
+        _ -> fail $ "Could not parse line: \"" ++ s ++ "\" as pair of handShapes"
 
-parsePart2 :: String -> [(HandShape, GameResult)]
-parsePart2 = map parseLine . lines
+parsePart2 :: MonadFail m => String -> m [(HandShape, GameResult)]
+parsePart2 = mapM parseLine . lines
   where
     parseLine s =
       case splitOn [' '] s of
-        [a, b] ->
-          let a' = parseHandShape a
-              b' = parseGameResult b
-           in (a', b')
-        _ -> error $ "Could not parse line: \"" ++ s ++ "\" as tuple (handShape, gameResult)"
+        [a, b] -> do
+          a' <- parseHandShape a
+          b' <- parseGameResult b
+          return (a', b')
+        _ -> fail $ "Could not parse line: \"" ++ s ++ "\" as tuple (handShape, gameResult)"
 
 playGame :: HandShape -> HandShape -> GameResult
 playGame Rock Rock = Draw
@@ -79,5 +80,8 @@ findShape opponentShape result = head $ filter ((result ==) . playGame opponentS
 part2 :: [(HandShape, GameResult)] -> Int
 part2 = sum . map (\(opp, res) -> scoreRound opp $ findShape opp res)
 
-solve :: String -> (String, String)
-solve = pairMap show . applyTuple (part1 . parsePart1, part2 . parsePart2)
+solve :: MonadFail m => String -> m (String, String)
+solve input = do
+  p1 <- parsePart1 input <&> part1
+  p2 <- parsePart2 input <&> part2
+  return $ pairMap show (p1, p2)

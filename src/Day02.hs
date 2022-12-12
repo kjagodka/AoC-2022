@@ -1,8 +1,7 @@
 module Day02 (solve) where
 
-import Data.Functor ((<&>))
 import Data.List.Split (splitOn)
-import Utils (pairMap)
+import Utils (pairMap, applyTuple, joinPair)
 
 data HandShape = Rock | Paper | Scissors
 
@@ -81,7 +80,4 @@ part2 :: [(HandShape, GameResult)] -> Int
 part2 = sum . map (\(opp, res) -> scoreRound opp $ findShape opp res)
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = do
-  p1 <- parsePart1 input <&> part1
-  p2 <- parsePart2 input <&> part2
-  return $ pairMap show (p1, p2)
+solve input = pairMap show <$> joinPair (applyTuple (fmap part1 . parsePart1, fmap part2 . parsePart2) input)

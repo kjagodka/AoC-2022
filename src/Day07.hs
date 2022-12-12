@@ -58,6 +58,4 @@ part2 capacity required fs = minimum . filter (threshold <=) . map discSize . di
     threshold = discSize fs - (capacity - required)
 
 solve :: MonadFail m => String -> m (String, String)
-solve input =
-  parse input
-    <&> applyTuple (show . part1 100000, show . part2 70000000 30000000)
+solve input = applyTuple (show . part1 100000, show . part2 70000000 30000000) <$> parse input

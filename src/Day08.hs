@@ -1,7 +1,6 @@
 module Day08 (solve) where
 
 import Data.Char (isDigit)
-import Data.Functor ((<&>))
 import Data.List (find, mapAccumL, mapAccumR, transpose)
 import Data.Maybe (fromMaybe)
 import Utils (applyTuple, pairMap)
@@ -62,4 +61,4 @@ part2 :: [[Int]] -> Int
 part2 = maximum . map maximum . score
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show
+solve input = pairMap show . applyTuple (part1, part2) <$> parse input

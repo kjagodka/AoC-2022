@@ -1,7 +1,6 @@
 module Day12 (solve) where
 
 import Data.Char (isLower)
-import Data.Functor ((<&>))
 import Data.Map as Map (Map, empty, filter, findWithDefault, fromList, insert, keys, lookup, member)
 import Data.Maybe (mapMaybe)
 import Utils (applyTuple, pairMap)
@@ -66,4 +65,4 @@ part2 :: HeightMap -> Int
 part2 = solvePart ((== 0) . height)
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show
+solve input = pairMap show . applyTuple (part1, part2) <$> parse input

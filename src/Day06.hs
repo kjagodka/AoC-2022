@@ -1,7 +1,6 @@
 module Day06 (solve) where
 
 import Data.Char (isLower)
-import Data.Functor ((<&>))
 import Data.List (findIndex)
 import Data.List.Split (divvy)
 import Data.Set (fromList, size)
@@ -28,4 +27,4 @@ part2 s = case findIndex isMarker . divvy 14 1 $ s of
   Nothing -> fail $ "No marker in input: " ++ s
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = parse input >>= joinPair . applyTuple (part1, part2) <&> pairMap show
+solve input = fmap (pairMap show) $ parse input >>= joinPair . applyTuple (part1, part2)

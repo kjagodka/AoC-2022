@@ -1,7 +1,6 @@
 module Day03 (solve) where
 
 import Data.Char (isLetter, isLower)
-import Data.Functor ((<&>))
 import Data.List.Split (chunksOf)
 import Data.Set (Set, fromList, intersection, toList, union)
 import Utils (applyTuple, pairMap)
@@ -20,7 +19,7 @@ split xs = splitAt n xs
 parse :: MonadFail m => String -> m [(Set Char, Set Char)]
 parse = mapM parseLine . lines
   where
-    parseLine line = verify line <&> split <&> pairMap fromList
+    parseLine line = pairMap fromList . split <$> verify line
 
 itemPriority :: Char -> Int
 itemPriority c =
@@ -35,4 +34,4 @@ part2 :: [(Set Char, Set Char)] -> Int
 part2 = sum . map (itemPriority . head . toList . foldl1 intersection) . chunksOf 3 . map (uncurry union)
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show
+solve input = pairMap show . applyTuple (part1, part2) <$> parse input

@@ -1,6 +1,5 @@
 module Day10 (solve) where
 
-import Data.Functor ((<&>))
 import Data.List.Split (chunksOf)
 import Utils (applyTuple, parseInt)
 
@@ -41,4 +40,4 @@ part2 ins = '\n' : unlines rows
       | otherwise = '.'
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = parse input <&> applyTuple (show . part1, part2)
+solve input = applyTuple (show . part1, part2) <$> parse input

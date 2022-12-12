@@ -1,6 +1,5 @@
 module Day09 (solve) where
 
-import Data.Functor ((<&>))
 import Data.Set (fromList, size)
 import Utils (applyTuple, pairMap, parseInt)
 
@@ -57,4 +56,4 @@ part2 :: [Move] -> Int
 part2 = countTailPositions . simulateRope (replicate 10 (0, 0))
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show
+solve input = pairMap show . applyTuple (part1, part2) <$> parse input

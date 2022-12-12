@@ -1,11 +1,10 @@
 module Day11 (solve) where
 
-import Data.List.Split (splitOn)
-import Data.Map (Map, adjust, findWithDefault, fromList, insert, keys, elems)
-import Text.Read (readMaybe)
 import Data.List (sort)
-import Utils (parseInt, pairMap, applyTuple)
-import Data.Functor ( (<&>) )
+import Data.List.Split (splitOn)
+import Data.Map (Map, adjust, elems, findWithDefault, fromList, insert, keys)
+import Text.Read (readMaybe)
+import Utils (applyTuple, pairMap, parseInt)
 
 type Item = Int
 
@@ -109,16 +108,17 @@ execMonkey f monkeyId monkeys =
 
 execRound :: (MonkeyId -> Monkeys -> Monkeys) -> Monkeys -> Monkeys
 execRound f monkeys = foldl (flip f) monkeys ids
-  where ids = keys monkeys
+  where
+    ids = keys monkeys
 
 getResult :: Monkeys -> Int
 getResult = product . take 2 . reverse . sort . map inspected . elems
 
 part1 :: (Monkeys, Int) -> Int
-part1 (monkeys, _)  = getResult . (!! 20) . iterate (execRound (execMonkey (`div` 3))) $ monkeys
+part1 (monkeys, _) = getResult . (!! 20) . iterate (execRound (execMonkey (`div` 3))) $ monkeys
 
 part2 :: (Monkeys, Int) -> Int
 part2 (monkeys, modulus) = getResult . (!! 10000) . iterate (execRound (execMonkey (`mod` modulus))) $ monkeys
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show
+solve input = pairMap show . applyTuple (part1, part2) <$> parse input

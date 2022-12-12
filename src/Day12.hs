@@ -19,7 +19,6 @@ type DistanceMap = Map Coordinates Distance
 
 parse :: MonadFail m => String -> m HeightMap
 parse str =
-  --fmap (fromList . zipWith (\y (x, sq) -> ((x, y), sq)) [0..]) . mapM (fmap (zip [0..]) . mapM parseSquare) . lines
   let squares = mapM (mapM parseSquare) $ lines str
       coords = [zip (repeat x) [0 ..] | x <- [0 ..]]
    in fromList . concat . zipWith zip coords <$> squares

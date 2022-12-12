@@ -31,21 +31,17 @@ parse str =
       | isLower c = return $ Area c
       | otherwise = fail $ "Could not parse GridSquare: '" ++ [c] ++ "'"
 
-height :: HeightMap -> Coordinates -> Int
-height hm coords = height' $ findWithDefault Outside coords hm
-  where
-    height' (Area c) = fromEnum c - fromEnum 'a'
-    height' Start = height' $ Area 'a'
-    height' End = height' $ Area 'z'
-    height' Outside = maxBound
+height :: GridSquare -> Int
+height (Area c) = fromEnum c - fromEnum 'a'
+height Start = height $ Area 'a'
+height End = height $ Area 'z'
+height Outside = maxBound
 
 neighbours :: Coordinates -> [Coordinates]
 neighbours (x, y) = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
 
-bfs :: HeightMap -> DistanceMap
-bfs hm =
-  let startCoords = keys $ Map.filter (== Start) hm
-   in bfsLoop startCoords [] 0 empty
+bfs :: [Coordinates] -> HeightMap -> DistanceMap
+bfs startCoords hm = bfsLoop startCoords [] 0 empty
   where
     bfsLoop :: [Coordinates] -> [Coordinates] -> Distance -> DistanceMap -> DistanceMap
     bfsLoop [] [] _ distMap = distMap
@@ -54,16 +50,22 @@ bfs hm =
       | member cur distMap = bfsLoop curs next dist distMap
       | otherwise = bfsLoop curs (accesible ++ next) dist (insert cur dist distMap)
       where
-        accesible = Prelude.filter ((<= (height hm cur + 1)) . height hm) $ neighbours cur
+        accesible = Prelude.filter ((<= (coordHeight cur + 1)) . coordHeight) $ neighbours cur
+        coordHeight coord = height $ findWithDefault Outside coord hm
 
 part1 :: HeightMap -> Int
 part1 hm =
-  let dm = bfs hm
+  let startCoords = keys $ Map.filter (== Start) hm
+      dm = bfs startCoords hm
       endCoords = keys $ Map.filter (== End) hm
    in minimum . mapMaybe (`Map.lookup` dm) $ endCoords
 
 part2 :: HeightMap -> Int
-part2 = part1
+part2 hm =
+  let startCoords = keys $ Map.filter ((== 0) . height) hm
+      dm = bfs startCoords hm
+      endCoords = keys $ Map.filter (== End) hm
+   in minimum . mapMaybe (`Map.lookup` dm) $ endCoords
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

@@ -52,19 +52,18 @@ bfs startCoords hm = bfsLoop startCoords [] 0 empty
         accesible = Prelude.filter ((<= (coordHeight cur + 1)) . coordHeight) $ neighbours cur
         coordHeight coord = height $ findWithDefault Outside coord hm
 
-part1 :: HeightMap -> Int
-part1 hm =
-  let startCoords = keys $ Map.filter (== Start) hm
+solvePart :: (Point -> Bool) -> HeightMap -> Int
+solvePart predicate hm = 
+  let startCoords = keys $ Map.filter predicate hm
       dm = bfs startCoords hm
       endCoords = keys $ Map.filter (== End) hm
    in minimum . mapMaybe (`Map.lookup` dm) $ endCoords
 
+part1 :: HeightMap -> Int
+part1 = solvePart (== Start)
+
 part2 :: HeightMap -> Int
-part2 hm =
-  let startCoords = keys $ Map.filter ((== 0) . height) hm
-      dm = bfs startCoords hm
-      endCoords = keys $ Map.filter (== End) hm
-   in minimum . mapMaybe (`Map.lookup` dm) $ endCoords
+part2 = solvePart ((== 0) . height)
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = parse input <&> applyTuple (part1, part2) <&> pairMap show

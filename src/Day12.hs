@@ -10,10 +10,10 @@ type Coordinates = (Int, Int)
 
 type Distance = Int
 
-data GridSquare = Area Char | Start | End | Outside
+data Point = Elevation Char | Start | End | Outside
   deriving (Eq)
 
-type HeightMap = Map Coordinates GridSquare
+type HeightMap = Map Coordinates Point
 
 type DistanceMap = Map Coordinates Distance
 
@@ -23,17 +23,17 @@ parse str =
       coords = [zip (repeat x) [0 ..] | x <- [0 ..]]
    in fromList . concat . zipWith zip coords <$> squares
   where
-    parseSquare :: MonadFail m => Char -> m GridSquare
+    parseSquare :: MonadFail m => Char -> m Point
     parseSquare 'S' = return Start
     parseSquare 'E' = return End
     parseSquare c
-      | isLower c = return $ Area c
+      | isLower c = return $ Elevation c
       | otherwise = fail $ "Could not parse GridSquare: '" ++ [c] ++ "'"
 
-height :: GridSquare -> Int
-height (Area c) = fromEnum c - fromEnum 'a'
-height Start = height $ Area 'a'
-height End = height $ Area 'z'
+height :: Point -> Int
+height (Elevation c) = fromEnum c - fromEnum 'a'
+height Start = height $ Elevation 'a'
+height End = height $ Elevation 'z'
 height Outside = maxBound
 
 neighbours :: Coordinates -> [Coordinates]

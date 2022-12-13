@@ -5,18 +5,15 @@ import Data.List (sort)
 import Data.List.Split (splitOn)
 import Text.Read (readMaybe)
 import Utils (applyTuple, pairMap)
+import Data.Bifunctor (first)
 
 data Packet = Number Int | List [Packet]
 
 instance Read Packet where
   readsPrec precedence str
     | null str = []
-    | isDigit $ head str =
-      let (n, rest) = head $ readsPrec precedence str :: (Int, String)
-       in [(Number n, rest)]
-    | (== '[') $ head str =
-      let (packets, rest) = head $ readsPrec precedence str :: ([Packet], String)
-       in [(List packets, rest)]
+    | isDigit $ head str = map (first Number) $ readsPrec precedence str
+    | (== '[') $ head str = map (first List) $ readsPrec precedence str
     | otherwise = []
 
 instance Show Packet where

@@ -1,6 +1,6 @@
 module Day13 (solve) where
 
-import Data.Char (isDigit, isSpace)
+import Data.Char (isDigit)
 import Data.List.Split (splitOn)
 import Text.Read (readMaybe)
 import Utils (applyTuple, pairMap)
@@ -11,7 +11,6 @@ data Packet = Number Int | List [Packet]
 instance Read Packet where
   readsPrec precedence str
     | null str = []
-    | isSpace $ head str = readsPrec precedence (tail str)
     | isDigit $ head str =
       let (n, rest) = head $ readsPrec precedence str :: (Int, String)
        in [(Number n, rest)]

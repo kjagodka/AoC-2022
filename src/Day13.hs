@@ -1,10 +1,10 @@
 module Day13 (solve) where
 
 import Data.Char (isDigit)
+import Data.List (sort)
 import Data.List.Split (splitOn)
 import Text.Read (readMaybe)
 import Utils (applyTuple, pairMap)
-import Data.List (sort)
 
 data Packet = Number Int | List [Packet]
 
@@ -23,17 +23,14 @@ instance Show Packet where
   show (Number n) = show n
   show (List list) = show list
 
-instance Eq Packet where
-  (Number n) == (Number m) = n == m
-  (Number n) == (List l) = [Number n] == l
-  (List l) == (Number n) = l == [Number n]
-  (List l1) == (List l2) = l1 == l2
-
 instance Ord Packet where
   (Number n) `compare` (Number m) = n `compare` m
   (Number n) `compare` (List l) = [Number n] `compare` l
   (List l) `compare` (Number n) = l `compare` [Number n]
   (List l1) `compare` (List l2) = l1 `compare` l2
+
+instance Eq Packet where
+  a == b = (a `compare` b) == EQ
 
 parse :: MonadFail m => String -> m [(Packet, Packet)]
 parse = mapM parsePair . splitOn [""] . lines
@@ -52,10 +49,10 @@ part1 :: [(Packet, Packet)] -> Int
 part1 = sum . map fst . filter (uncurry (<=) . snd) . zip [1 ..]
 
 part2 :: [(Packet, Packet)] -> Int
-part2 packets = 
+part2 packets =
   let distress = [read "[[2]]", read "[[6]]"] :: [Packet]
       sorted = sort . (distress ++) . concatMap (\(a, b) -> [a, b]) $ packets
-   in product . map fst . filter ((`elem` distress) . snd) . zip [1..] $ sorted
+   in product . map fst . filter ((`elem` distress) . snd) . zip [1 ..] $ sorted
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

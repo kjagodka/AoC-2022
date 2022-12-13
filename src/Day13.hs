@@ -4,6 +4,7 @@ import Data.Char (isDigit, isSpace)
 import Data.List.Split (splitOn)
 import Text.Read (readMaybe)
 import Utils (applyTuple, pairMap)
+import Data.List (sort)
 
 data Packet = Number Int | List [Packet]
 
@@ -52,7 +53,10 @@ part1 :: [(Packet, Packet)] -> Int
 part1 = sum . map fst . filter (uncurry (<=) . snd) . zip [1 ..]
 
 part2 :: [(Packet, Packet)] -> Int
-part2 = part1
+part2 packets = 
+  let distress = [read "[[2]]", read "[[6]]"] :: [Packet]
+      sorted = sort . (distress ++) . concatMap (\(a, b) -> [a, b]) $ packets
+   in product . map fst . filter ((`elem` distress) . snd) . zip [1..] $ sorted
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

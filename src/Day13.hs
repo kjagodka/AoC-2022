@@ -1,7 +1,6 @@
 module Day13 (solve) where
 
 import Data.Char (isDigit)
-import Data.List (sort)
 import Data.List.Split (splitOn)
 import Text.Read (readMaybe)
 import Utils (applyTuple, pairMap)
@@ -15,10 +14,6 @@ instance Read Packet where
     | isDigit $ head str = map (first Number) $ readsPrec precedence str
     | (== '[') $ head str = map (first List) $ readsPrec precedence str
     | otherwise = []
-
-instance Show Packet where
-  show (Number n) = show n
-  show (List list) = show list
 
 instance Ord Packet where
   (Number n) `compare` (Number m) = n `compare` m
@@ -46,10 +41,11 @@ part1 :: [(Packet, Packet)] -> Int
 part1 = sum . map fst . filter (uncurry (<=) . snd) . zip [1 ..]
 
 part2 :: [(Packet, Packet)] -> Int
-part2 packets =
-  let distress = [read "[[2]]", read "[[6]]"] :: [Packet]
-      sorted = sort . (distress ++) . concatMap (\(a, b) -> [a, b]) $ packets
-   in product . map fst . filter ((`elem` distress) . snd) . zip [1 ..] $ sorted
+part2 pairs =
+  let packets = concatMap (\(a, b) -> [a, b]) $ (read "[[2]]", read "[[6]]") : pairs
+      i1 = length . filter (<= read "[[2]]") $ packets
+      i2 = length . filter (<= read "[[6]]") $ packets
+   in i1 * i2
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

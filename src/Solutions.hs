@@ -12,9 +12,10 @@ import qualified Day09 (solve)
 import qualified Day10 (solve)
 import qualified Day11 (solve)
 import qualified Day12 (solve)
+import qualified Day13 (solve)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 solve :: MonadFail m => Int -> String -> m (String, String)
 solve 1 = Day01.solve
@@ -29,6 +30,7 @@ solve 9 = Day09.solve
 solve 10 = Day10.solve
 solve 11 = Day11.solve
 solve 12 = Day12.solve
+solve 13 = Day13.solve
 solve n = \_ -> fail $ "Tried to run solve " ++ show n ++ "which isn't implementded"
 
 examplesTestData :: [(Int, String, (String, String))]
@@ -313,7 +315,32 @@ examplesTestData =
       \acctuvwj\n\
       \abdefghi\n",
       ("31", "29")
-    )
+    ), 
+    ( 13,
+    "[1,1,3,1,1]\n\
+    \[1,1,5,1,1]\n\
+    \\n\
+    \[[1],[2,3,4]]\n\
+    \[[1],4]\n\
+    \\n\
+    \[9]\n\
+    \[[8,7,6]]\n\
+    \\n\
+    \[[4,4],4,4]\n\
+    \[[4,4],4,4,4]\n\
+    \\n\
+    \[7,7,7,7]\n\
+    \[7,7,7]\n\
+    \\n\
+    \[]\n\
+    \[3]\n\
+    \\n\
+    \[[[]]]\n\
+    \[[]]\n\
+    \\n\
+    \[1,[2,[3,[4,[5,6,7]]]],8,9]\n\
+    \[1,[2,[3,[4,[5,6,0]]]],8,9]\n",
+    ("13", "13"))
   ]
 
 fullTestsData :: [(Int, (String, String))]

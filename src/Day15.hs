@@ -1,7 +1,8 @@
 module Day15 (solve) where
 
-import qualified Data.HashSet as Set
-import Utils
+import qualified Data.HashSet as Set (HashSet, filter, foldl', difference, toList, map, fromList, size, insert, empty)
+import Data.List (sort)
+import Utils (applyTuple, joinPair, pairMap)
 
 type Coords = (Int, Int)
 
@@ -35,7 +36,7 @@ distance (aX, aY) (bX, bY) = abs (bX - aX) + abs (bY - aY)
 areAdjacent :: Interval -> Interval -> Bool
 areAdjacent (aFrom, aTo) (bFrom, bTo) = not ((bFrom - aTo > 1) || (aFrom - bTo > 1))
 
-intervalSum :: Interval -> Interval -> Interval
+intervalSum :: Interval -> Interval -> Interval --assumes intervals are adjacent
 intervalSum (aFrom, aTo) (bFrom, bTo) = (min aFrom bFrom, max aTo bTo)
 
 intervalProduct :: Interval -> Interval -> Interval
@@ -44,7 +45,7 @@ intervalProduct (aFrom, aTo) (bFrom, bTo) = (max aFrom bFrom, min aTo bTo)
 addIntervalToSet :: IntervalSet -> Interval -> IntervalSet
 addIntervalToSet s i =
   let adjacents = Set.filter (areAdjacent i) s
-      overlapping = Set.foldl' intervalSum i s
+      overlapping = Set.foldl' intervalSum i adjacents
    in Set.insert overlapping $ Set.difference s adjacents
 
 intervalSize :: Interval -> Int
@@ -52,12 +53,11 @@ intervalSize (from, to)
   | to < from = 0
   | otherwise = to - from + 1
 
-
 intervalSetSize :: IntervalSet -> Int
 intervalSetSize s = Set.foldl' (+) 0 $ Set.map intervalSize s
 
 maxRange :: Int
-maxRange = 20
+maxRange = 4000000
 
 hasScannedRow :: Int -> (Coords, Int) -> Bool
 hasScannedRow rowY ((_, sY), dist) = abs (sY - rowY) <= dist
@@ -73,7 +73,6 @@ exludedinRow rowY input =
       exludedIntervals = map (scannedInterval rowY) . Prelude.filter (hasScannedRow rowY) $ scannersDists
    in foldl addIntervalToSet Set.empty exludedIntervals
 
-
 part1 :: [(Coords, Coords)] -> Int
 part1 input =
   let beaconsPositions = Set.fromList . map snd $ input
@@ -81,7 +80,18 @@ part1 input =
    in intervalSetSize (exludedinRow (maxRange `div` 2) input) - beaconsInRow
 
 part2 :: [(Coords, Coords)] -> Int
-part2 = part1
+part2 input =
+  let rows = [0 .. maxRange]
+      searchInterval = (0, maxRange)
+      exluded = map (Set.map (intervalProduct searchInterval) . (`exludedinRow` input)) rows
+      row = head . filter (\(_, exl) -> intervalSetSize exl < intervalSize searchInterval) $ zip [0 ..] exluded
+      y = fst row
+      x = case sort . Set.toList . snd $ row of
+        [(1, _)] -> 0
+        [(0, _)] -> maxRange
+        [(0, lower), _] -> lower + 1
+        _ -> undefined
+   in x * 4000000 + y
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

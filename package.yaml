@@ -23,6 +23,7 @@ dependencies:
 - tasty-hunit
 - containers
 - ansi-terminal
+- unordered-containers
 
 ghc-options:
 - -Wall

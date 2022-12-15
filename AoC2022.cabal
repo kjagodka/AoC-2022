@@ -52,6 +52,7 @@ library
     , split
     , tasty
     , tasty-hunit
+    , unordered-containers
   default-language: Haskell2010
 
 executable AoC2022-exe
@@ -69,6 +70,7 @@ executable AoC2022-exe
     , split
     , tasty
     , tasty-hunit
+    , unordered-containers
   default-language: Haskell2010
 
 test-suite AoC2022-test
@@ -87,4 +89,5 @@ test-suite AoC2022-test
     , split
     , tasty
     , tasty-hunit
+    , unordered-containers
   default-language: Haskell2010

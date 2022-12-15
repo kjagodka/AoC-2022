@@ -1,14 +1,14 @@
 module Day14 (solve) where
 
 import Control.Monad (zipWithM)
-import Data.Set (Set, fromAscList, insert, member, size, unions)
+import Data.HashSet (HashSet, fromList, insert, member, size, unions)
 import Utils (applyTuple, joinPair, pairMap, parseInt, splitEvensOdds)
 
 type Coord = Int
 
 type Coords = (Coord, Coord)
 
-type Cave = Set Coords --set of coords filled by rock or sand)
+type Cave = HashSet Coords --set of coords filled by rock or sand)
 
 sandSpawner :: Coords
 sandSpawner = (500, 0)
@@ -20,10 +20,10 @@ parse str = do
   let abbysY = maximum $ concatMap (map snd) coordsSeqs
    in return (paths, abbysY)
   where
-    wall :: MonadFail m => Coords -> Coords -> m (Set Coords)
+    wall :: MonadFail m => Coords -> Coords -> m (Cave)
     wall (x1, y1) (x2, y2)
-      | x1 == x2 = return . fromAscList $ [(x1, y) | y <- [(min y1 y2) .. (max y1 y2)]]
-      | y1 == y2 = return . fromAscList $ [(x, y1) | x <- [(min x1 x2) .. (max x1 x2)]]
+      | x1 == x2 = return . fromList $ [(x1, y) | y <- [(min y1 y2) .. (max y1 y2)]]
+      | y1 == y2 = return . fromList $ [(x, y1) | x <- [(min x1 x2) .. (max x1 x2)]]
       | otherwise = fail $ "Could not make straight line from: " ++ show (x1, y1) ++ " to: " ++ show (x2, y2)
 
     parseLine :: MonadFail m => String -> m [Coords]

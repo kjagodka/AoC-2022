@@ -1,13 +1,16 @@
 module Day15 (solve) where
 
-import Data.List (sort, partition, nub)
+import Data.List (partition, nub)
 import Utils (applyTuple, joinPair, pairMap)
+import Data.Maybe (mapMaybe)
 
 type Coords = (Int, Int)
 
 type Interval = (Int, Int)
 
 type IntervalSet = [Interval]
+
+type Line = (Int, Int) --(a, b) in y = ax + b
 
 parse :: MonadFail m => String -> m [(Coords, Coords)]
 parse = mapM parseLine . lines
@@ -32,20 +35,14 @@ parse = mapM parseLine . lines
 distance :: Coords -> Coords -> Int
 distance (aX, aY) (bX, bY) = abs (bX - aX) + abs (bY - aY)
 
-areAdjacent :: Interval -> Interval -> Bool
-areAdjacent (aFrom, aTo) (bFrom, bTo) = not ((bFrom - aTo > 1) || (aFrom - bTo > 1))
-
-intervalSum :: Interval -> Interval -> Interval --assumes intervals are adjacent
-intervalSum (aFrom, aTo) (bFrom, bTo) = (min aFrom bFrom, max aTo bTo)
-
-intervalProduct :: Interval -> Interval -> Interval
-intervalProduct (aFrom, aTo) (bFrom, bTo) = (max aFrom bFrom, min aTo bTo)
-
 addIntervalToSet :: IntervalSet -> Interval -> IntervalSet
 addIntervalToSet s i =
   let (adjacents, others) = partition (areAdjacent i) s
       merged = foldl intervalSum i adjacents
-   in merged : others 
+   in merged : others
+    where
+      areAdjacent (aFrom, aTo) (bFrom, bTo) = not ((bFrom - aTo > 1) || (aFrom - bTo > 1))
+      intervalSum (aFrom, aTo) (bFrom, bTo) = (min aFrom bFrom, max aTo bTo)
 
 intervalSize :: Interval -> Int
 intervalSize (from, to) = to - from + 1
@@ -76,19 +73,42 @@ part1 input =
       beaconsInRow = length  . filter ((== (maxRange `div` 2)) . snd) $ beaconsPositions
    in intervalSetSize (exludedinRow (maxRange `div` 2) input) - beaconsInRow
 
+perimeterLines :: Coords -> Int -> [Line]
+perimeterLines (sx, sy) dist =
+    let dist' = dist + 1
+        upLeft = (-1, sy + sx - dist')
+        downLeft = (1, sy - sx + dist')
+        upRight = (1, sy - sx - dist')
+        downRight = (-1, sy + sx + dist')
+
+     in [upLeft, downLeft, upRight, downRight]
+
+intersection :: Line -> Line -> Maybe Coords
+intersection (a1, b1) (a2, b2)
+  | a1 == a2 = Nothing
+  | even b1 /= even b2 = Nothing
+  | otherwise =
+    let x = (b2 - b1) `div` (a1 - a2)
+        y = a1 * x + b1
+     in Just (x, y)
+
+cartesianProduct :: [a] -> [b] -> [(a, b)]
+cartesianProduct as bs = [(a, b) | a <- as, b <- bs]
+
 part2 :: [(Coords, Coords)] -> Int
 part2 input =
-  let rows = [0 .. maxRange]
-      searchInterval = (0, maxRange)
-      exluded = map (map (intervalProduct searchInterval) . (`exludedinRow` input)) rows
-      row = head . filter (\(_, exl) -> intervalSetSize exl < intervalSize searchInterval) $ zip [0 ..] exluded
-      y = fst row
-      x = case sort . snd $ row of
-        [(1, _)] -> 0
-        [(0, _)] -> maxRange
-        [(0, lower), _] -> lower + 1
-        _ -> undefined
+  let scannersDists = map (\(scanner, beacon) -> (scanner, distance scanner beacon)) input
+      lns = concatMap (uncurry perimeterLines) scannersDists
+      (goingUp, goingDown) = partition ((== 1) . fst) lns
+      intersections = mapMaybe (uncurry intersection) (cartesianProduct goingUp goingDown)
+      intersectionsInside = filter isInside intersections
+      corners = [(0, 0), (0, maxRange), (maxRange, 0), (maxRange, maxRange)]
+      (x, y) = head . nub $ filter notScanned (corners ++ intersectionsInside)
    in x * 4000000 + y
+  where
+    notScanned candidate = all (\(scanner, beacon) -> distance scanner candidate > distance scanner beacon) input
+    isInside (x, y) = (x >= 0) && (x <= maxRange) && (y >= 0) && (y <= maxRange)
+
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

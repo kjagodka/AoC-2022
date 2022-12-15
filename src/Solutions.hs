@@ -14,9 +14,10 @@ import qualified Day11 (solve)
 import qualified Day12 (solve)
 import qualified Day13 (solve)
 import qualified Day14 (solve)
+import qualified Day15 (solve)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 solve :: MonadFail m => Int -> String -> m (String, String)
 solve 1 = Day01.solve
@@ -33,7 +34,8 @@ solve 11 = Day11.solve
 solve 12 = Day12.solve
 solve 13 = Day13.solve
 solve 14 = Day14.solve
-solve n = \_ -> fail $ "Tried to run solve " ++ show n ++ "which isn't implementded"
+solve 15 = Day15.solve
+solve n = \_ -> fail $ "Tried to run solution of day: " ++ show n ++ "which isn't implementded"
 
 examplesTestData :: [(Int, String, (String, String))]
 examplesTestData =
@@ -317,36 +319,55 @@ examplesTestData =
       \acctuvwj\n\
       \abdefghi\n",
       ("31", "29")
-    ), 
+    ),
     ( 13,
-    "[1,1,3,1,1]\n\
-    \[1,1,5,1,1]\n\
-    \\n\
-    \[[1],[2,3,4]]\n\
-    \[[1],4]\n\
-    \\n\
-    \[9]\n\
-    \[[8,7,6]]\n\
-    \\n\
-    \[[4,4],4,4]\n\
-    \[[4,4],4,4,4]\n\
-    \\n\
-    \[7,7,7,7]\n\
-    \[7,7,7]\n\
-    \\n\
-    \[]\n\
-    \[3]\n\
-    \\n\
-    \[[[]]]\n\
-    \[[]]\n\
-    \\n\
-    \[1,[2,[3,[4,[5,6,7]]]],8,9]\n\
-    \[1,[2,[3,[4,[5,6,0]]]],8,9]\n",
-    ("13", "140")), 
+      "[1,1,3,1,1]\n\
+      \[1,1,5,1,1]\n\
+      \\n\
+      \[[1],[2,3,4]]\n\
+      \[[1],4]\n\
+      \\n\
+      \[9]\n\
+      \[[8,7,6]]\n\
+      \\n\
+      \[[4,4],4,4]\n\
+      \[[4,4],4,4,4]\n\
+      \\n\
+      \[7,7,7,7]\n\
+      \[7,7,7]\n\
+      \\n\
+      \[]\n\
+      \[3]\n\
+      \\n\
+      \[[[]]]\n\
+      \[[]]\n\
+      \\n\
+      \[1,[2,[3,[4,[5,6,7]]]],8,9]\n\
+      \[1,[2,[3,[4,[5,6,0]]]],8,9]\n",
+      ("13", "140")
+    ),
     ( 14,
-    "498,4 -> 498,6 -> 496,6\n\
-    \503,4 -> 502,4 -> 502,9 -> 494,9",
-    ("24", "93"))
+      "498,4 -> 498,6 -> 496,6\n\
+      \503,4 -> 502,4 -> 502,9 -> 494,9",
+      ("24", "93")
+    ),
+    ( 15,
+      "Sensor at x=2, y=18: closest beacon is at x=-2, y=15\n\
+      \Sensor at x=9, y=16: closest beacon is at x=10, y=16\n\
+      \Sensor at x=13, y=2: closest beacon is at x=15, y=3\n\
+      \Sensor at x=12, y=14: closest beacon is at x=10, y=16\n\
+      \Sensor at x=10, y=20: closest beacon is at x=10, y=16\n\
+      \Sensor at x=14, y=17: closest beacon is at x=10, y=16\n\
+      \Sensor at x=8, y=7: closest beacon is at x=2, y=10\n\
+      \Sensor at x=2, y=0: closest beacon is at x=2, y=10\n\
+      \Sensor at x=0, y=11: closest beacon is at x=2, y=10\n\
+      \Sensor at x=20, y=14: closest beacon is at x=25, y=17\n\
+      \Sensor at x=17, y=20: closest beacon is at x=21, y=22\n\
+      \Sensor at x=16, y=7: closest beacon is at x=15, y=3\n\
+      \Sensor at x=14, y=3: closest beacon is at x=15, y=3\n\
+      \Sensor at x=20, y=1: closest beacon is at x=15, y=3\n",
+      ("26", "0")
+    )
   ]
 
 fullTestsData :: [(Int, (String, String))]

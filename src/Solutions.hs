@@ -13,9 +13,10 @@ import qualified Day10 (solve)
 import qualified Day11 (solve)
 import qualified Day12 (solve)
 import qualified Day13 (solve)
+import qualified Day14 (solve)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 solve :: MonadFail m => Int -> String -> m (String, String)
 solve 1 = Day01.solve
@@ -31,6 +32,7 @@ solve 10 = Day10.solve
 solve 11 = Day11.solve
 solve 12 = Day12.solve
 solve 13 = Day13.solve
+solve 14 = Day14.solve
 solve n = \_ -> fail $ "Tried to run solve " ++ show n ++ "which isn't implementded"
 
 examplesTestData :: [(Int, String, (String, String))]
@@ -340,7 +342,11 @@ examplesTestData =
     \\n\
     \[1,[2,[3,[4,[5,6,7]]]],8,9]\n\
     \[1,[2,[3,[4,[5,6,0]]]],8,9]\n",
-    ("13", "140"))
+    ("13", "140")), 
+    ( 14,
+    "498,4 -> 498,6 -> 496,6\n\
+    \503,4 -> 502,4 -> 502,9 -> 494,9",
+    ("24", ""))
   ]
 
 fullTestsData :: [(Int, (String, String))]
@@ -367,5 +373,6 @@ fullTestsData =
     ),
     (11, ("95472", "17926061332")),
     (12, ("490", "488")),
-    (13, ("6656", "19716"))
+    (13, ("6656", "19716")),
+    (14, ("592", ""))
   ]

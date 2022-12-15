@@ -1,4 +1,4 @@
-module Utils (showResults, parseInt, pairMap, applyTuple, joinPair, readInputs) where
+module Utils (showResults, parseInt, pairMap, applyTuple, joinPair, readInputs, splitEvensOdds) where
 
 import Control.Exception (try)
 
@@ -30,3 +30,8 @@ readInputs n = do
     Right contents -> return contents
   where
     filepath = "input/Day" ++ show n ++ ".in"
+
+splitEvensOdds :: [a] -> ([a], [a])
+splitEvensOdds [] = ([], [])
+splitEvensOdds (x:xs) = (x : odds, evens)
+  where (evens, odds) = splitEvensOdds xs

@@ -51,11 +51,22 @@ dropSand abbysY cave = dropSandLoop cave [sandSpawner]
       | not $ member (x + 1, y + 1) filledCave = dropSandLoop filledCave ((x + 1, y + 1):trail)
       | otherwise = dropSandLoop (insert (x, y) filledCave) rest
 
+dropSand2 :: Coord -> Cave -> Cave
+dropSand2 lowestY cave = dropSandLoop cave [sandSpawner]
+  where
+    dropSandLoop filledCave [] = filledCave
+    dropSandLoop filledCave trail@((x, y):rest)
+      | y == lowestY + 1 = dropSandLoop (insert (x, y) filledCave) rest
+      | not $ member (x, y + 1) filledCave = dropSandLoop filledCave ((x, y + 1):trail)
+      | not $ member (x - 1, y + 1) filledCave = dropSandLoop filledCave ((x - 1, y + 1):trail)
+      | not $ member (x + 1, y + 1) filledCave = dropSandLoop filledCave ((x + 1, y + 1):trail)
+      | otherwise = dropSandLoop (insert (x, y) filledCave) rest
+
 part1 :: (Cave, Coord) -> Int
 part1 (cave, abbysY) = size (dropSand abbysY cave) - size cave
 
 part2 :: (Cave, Coord) -> Int
-part2 = part1
+part2 (cave, lowestY) = size (dropSand2 lowestY cave) - size cave
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

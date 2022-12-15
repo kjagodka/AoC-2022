@@ -1,8 +1,8 @@
 module Day15 (solve) where
 
-import Data.List (partition, nub)
-import Utils (applyTuple, joinPair, pairMap)
+import Data.List (nub, partition)
 import Data.Maybe (mapMaybe)
+import Utils (applyTuple, joinPair, pairMap)
 
 type Coords = (Int, Int)
 
@@ -40,9 +40,9 @@ addIntervalToSet s i =
   let (adjacents, others) = partition (areAdjacent i) s
       merged = foldl intervalSum i adjacents
    in merged : others
-    where
-      areAdjacent (aFrom, aTo) (bFrom, bTo) = not ((bFrom - aTo > 1) || (aFrom - bTo > 1))
-      intervalSum (aFrom, aTo) (bFrom, bTo) = (min aFrom bFrom, max aTo bTo)
+  where
+    areAdjacent (aFrom, aTo) (bFrom, bTo) = not ((bFrom - aTo > 1) || (aFrom - bTo > 1))
+    intervalSum (aFrom, aTo) (bFrom, bTo) = (min aFrom bFrom, max aTo bTo)
 
 intervalSize :: Interval -> Int
 intervalSize (from, to) = to - from + 1
@@ -70,23 +70,22 @@ exludedinRow rowY input =
 part1 :: [(Coords, Coords)] -> Int
 part1 input =
   let beaconsPositions = nub . map snd $ input
-      beaconsInRow = length  . filter ((== (maxRange `div` 2)) . snd) $ beaconsPositions
+      beaconsInRow = length . filter ((== (maxRange `div` 2)) . snd) $ beaconsPositions
    in intervalSetSize (exludedinRow (maxRange `div` 2) input) - beaconsInRow
 
 perimeterLines :: Coords -> Int -> [Line]
 perimeterLines (sx, sy) dist =
-    let dist' = dist + 1
-        upLeft = (-1, sy + sx - dist')
-        downLeft = (1, sy - sx + dist')
-        upRight = (1, sy - sx - dist')
-        downRight = (-1, sy + sx + dist')
-
-     in [upLeft, downLeft, upRight, downRight]
+  let dist' = dist + 1
+      upLeft = (-1, sy + sx - dist')
+      downLeft = (1, sy - sx + dist')
+      upRight = (1, sy - sx - dist')
+      downRight = (-1, sy + sx + dist')
+   in [upLeft, downLeft, upRight, downRight]
 
 intersection :: Line -> Line -> Maybe Coords
 intersection (a1, b1) (a2, b2)
   | a1 == a2 = Nothing
-  | even b1 /= even b2 = Nothing
+  | odd (b2 - b1) = Nothing
   | otherwise =
     let x = (b2 - b1) `div` (a1 - a2)
         y = a1 * x + b1
@@ -108,7 +107,6 @@ part2 input =
   where
     notScanned candidate = all (\(scanner, beacon) -> distance scanner candidate > distance scanner beacon) input
     isInside (x, y) = (x >= 0) && (x <= maxRange) && (y >= 0) && (y <= maxRange)
-
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

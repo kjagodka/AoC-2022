@@ -1,14 +1,13 @@
 module Day15 (solve) where
 
-import qualified Data.HashSet as Set (HashSet, filter, foldl', difference, toList, map, fromList, size, insert, empty)
-import Data.List (sort)
+import Data.List (sort, partition, nub)
 import Utils (applyTuple, joinPair, pairMap)
 
 type Coords = (Int, Int)
 
 type Interval = (Int, Int)
 
-type IntervalSet = Set.HashSet Interval
+type IntervalSet = [Interval]
 
 parse :: MonadFail m => String -> m [(Coords, Coords)]
 parse = mapM parseLine . lines
@@ -44,17 +43,15 @@ intervalProduct (aFrom, aTo) (bFrom, bTo) = (max aFrom bFrom, min aTo bTo)
 
 addIntervalToSet :: IntervalSet -> Interval -> IntervalSet
 addIntervalToSet s i =
-  let adjacents = Set.filter (areAdjacent i) s
-      overlapping = Set.foldl' intervalSum i adjacents
-   in Set.insert overlapping $ Set.difference s adjacents
+  let (adjacents, others) = partition (areAdjacent i) s
+      merged = foldl intervalSum i adjacents
+   in merged : others 
 
 intervalSize :: Interval -> Int
-intervalSize (from, to)
-  | to < from = 0
-  | otherwise = to - from + 1
+intervalSize (from, to) = to - from + 1
 
 intervalSetSize :: IntervalSet -> Int
-intervalSetSize s = Set.foldl' (+) 0 $ Set.map intervalSize s
+intervalSetSize s = sum $ map intervalSize s
 
 maxRange :: Int
 maxRange = 4000000
@@ -71,22 +68,22 @@ exludedinRow :: Int -> [(Coords, Coords)] -> IntervalSet
 exludedinRow rowY input =
   let scannersDists = map (\(scanner, beacon) -> (scanner, distance scanner beacon)) input
       exludedIntervals = map (scannedInterval rowY) . Prelude.filter (hasScannedRow rowY) $ scannersDists
-   in foldl addIntervalToSet Set.empty exludedIntervals
+   in foldl addIntervalToSet [] exludedIntervals
 
 part1 :: [(Coords, Coords)] -> Int
 part1 input =
-  let beaconsPositions = Set.fromList . map snd $ input
-      beaconsInRow = Set.size . Set.filter ((== (maxRange `div` 2)) . snd) $ beaconsPositions
+  let beaconsPositions = nub . map snd $ input
+      beaconsInRow = length  . filter ((== (maxRange `div` 2)) . snd) $ beaconsPositions
    in intervalSetSize (exludedinRow (maxRange `div` 2) input) - beaconsInRow
 
 part2 :: [(Coords, Coords)] -> Int
 part2 input =
   let rows = [0 .. maxRange]
       searchInterval = (0, maxRange)
-      exluded = map (Set.map (intervalProduct searchInterval) . (`exludedinRow` input)) rows
+      exluded = map (map (intervalProduct searchInterval) . (`exludedinRow` input)) rows
       row = head . filter (\(_, exl) -> intervalSetSize exl < intervalSize searchInterval) $ zip [0 ..] exluded
       y = fst row
-      x = case sort . Set.toList . snd $ row of
+      x = case sort . snd $ row of
         [(1, _)] -> 0
         [(0, _)] -> maxRange
         [(0, lower), _] -> lower + 1

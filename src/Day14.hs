@@ -20,7 +20,7 @@ parse str = do
   let abbysY = maximum $ concatMap (map snd) coordsSeqs
    in return (paths, abbysY)
   where
-    wall :: MonadFail m => Coords -> Coords -> m (Cave)
+    wall :: MonadFail m => Coords -> Coords -> m Cave
     wall (x1, y1) (x2, y2)
       | x1 == x2 = return . fromList $ [(x1, y) | y <- [(min y1 y2) .. (max y1 y2)]]
       | y1 == y2 = return . fromList $ [(x, y1) | x <- [(min x1 x2) .. (max x1 x2)]]

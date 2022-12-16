@@ -16,9 +16,9 @@ import Data.Map
   )
 import Utils (applyTuple, joinPair, pairMap, parseIntWithTail)
 
-valveNameToInt :: String -> Int
-valveNameToInt [c1, c2] = fromEnum c1 * 256 + fromEnum c2
-valveNameToInt _ = error "Valve name shouldbe 2 chars long"
+valveAsInt :: String -> Int
+valveAsInt [c1, c2] = fromEnum c1 * 256 + fromEnum c2
+valveAsInt _ = error "Valve name shouldbe 2 chars long"
 
 type Valve = Int
 
@@ -40,10 +40,10 @@ parse str =
     parseLine line = case words line of
       "Valve" : valve : "has" : "flow" : ('r' : 'a' : 't' : 'e' : '=' : rateStr) : "tunnels" : "lead" : "to" : "valves" : neighbors -> do
         flowrate <- parseIntWithTail ";" rateStr
-        return (valveNameToInt valve, flowrate, Prelude.map (valveNameToInt . take 2) neighbors)
-      ["Valve", valve, "has", "flow", ('r' : 'a' : 't' : 'e' : '=' : rateStr), "tunnel", "leads", "to", "valve", neighbor] -> do
+        return (valveAsInt valve, flowrate, Prelude.map (valveAsInt . take 2) neighbors)
+      ["Valve", valve, "has", "flow", 'r' : 'a' : 't' : 'e' : '=' : rateStr, "tunnel", "leads", "to", "valve", neighbor] -> do
         flowrate <- parseIntWithTail ";" rateStr
-        return (valveNameToInt valve, flowrate, [valveNameToInt neighbor])
+        return (valveAsInt valve, flowrate, [valveAsInt neighbor])
       _ -> fail $ "Could not parse line: " ++ line
 
     generateDistanceMap :: Map Valve [Valve] -> Map Edge Distance
@@ -93,10 +93,10 @@ explore ((time, valve) : others) flowRateMap distMap =
       | otherwise = (time', choice) : others
 
 part1 :: (Map Valve FlowRate, Map Edge Distance) -> Int
-part1 (flowRateMap, distMap) = explore [(30, valveNameToInt "AA")] flowRateMap distMap
+part1 (flowRateMap, distMap) = explore [(30, valveAsInt "AA")] flowRateMap distMap
 
 part2 :: (Map Valve FlowRate, Map Edge Distance) -> Int
-part2 (flowRateMap, distMap) = explore [(26, valveNameToInt "AA"), (26, valveNameToInt "AA")] flowRateMap distMap
+part2 (flowRateMap, distMap) = explore [(26, valveAsInt "AA"), (26, valveAsInt "AA")] flowRateMap distMap
 
 solve :: MonadFail m => String -> m (String, String)
 solve input = pairMap show . applyTuple (part1, part2) <$> parse input

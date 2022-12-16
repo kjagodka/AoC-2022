@@ -364,7 +364,7 @@ examplesTestData =
       \Valve HH has flow rate=22; tunnel leads to valve GG\n\
       \Valve II has flow rate=0; tunnels lead to valves AA, JJ\n\
       \Valve JJ has flow rate=21; tunnel leads to valve II\n",
-      ("1651", "")
+      ("1651", "1707")
     )
   ]
 
@@ -395,5 +395,5 @@ fullTestsData =
     (13, ("6656", "19716")),
     (14, ("592", "30367")),
     (15, ("5181556", "12817603219131")),
-    (16, ("2330", ""))
+    (16, ("2330", "2675"))
   ]

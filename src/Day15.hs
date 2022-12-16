@@ -2,7 +2,7 @@ module Day15 (solve) where
 
 import Data.List (nub, partition)
 import Data.Maybe (mapMaybe)
-import Utils (applyTuple, joinPair, pairMap)
+import Utils (applyTuple, joinPair, pairMap, parseIntWithTail)
 
 type Coords = (Int, Int)
 
@@ -23,14 +23,6 @@ parse = mapM parseLine . lines
             bY' = parseIntWithTail "" bY
          in joinPair (joinPair (sX', sY'), joinPair (bX', bY'))
       _ -> fail $ "Coult not parse line: " ++ line
-
-    parseIntWithTail :: MonadFail m => String -> String -> m Int
-    parseIntWithTail expected s = case reads s of
-      [(i, rest)] ->
-        if rest == expected
-          then return i
-          else fail $ "Could not parse: \"" ++ rest ++ "\" , expected: " ++ expected
-      _ -> fail $ "Could not parse integer: " ++ s
 
 distance :: Coords -> Coords -> Int
 distance (aX, aY) (bX, bY) = abs (bX - aX) + abs (bY - aY)

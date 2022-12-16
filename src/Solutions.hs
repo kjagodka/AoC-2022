@@ -15,9 +15,10 @@ import qualified Day12 (solve)
 import qualified Day13 (solve)
 import qualified Day14 (solve)
 import qualified Day15 (solve)
+import qualified Day16 (solve)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 solve :: MonadFail m => Int -> String -> m (String, String)
 solve 1 = Day01.solve
@@ -35,6 +36,7 @@ solve 12 = Day12.solve
 solve 13 = Day13.solve
 solve 14 = Day14.solve
 solve 15 = Day15.solve
+solve 16 = Day16.solve
 solve n = \_ -> fail $ "Tried to run solution of day: " ++ show n ++ "which isn't implementded"
 
 examplesTestData :: [(Int, String, (String, String))]
@@ -350,6 +352,19 @@ examplesTestData =
       "498,4 -> 498,6 -> 496,6\n\
       \503,4 -> 502,4 -> 502,9 -> 494,9",
       ("24", "93")
+    ),
+    ( 16,
+      "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB\n\
+      \Valve BB has flow rate=13; tunnels lead to valves CC, AA\n\
+      \Valve CC has flow rate=2; tunnels lead to valves DD, BB\n\
+      \Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE\n\
+      \Valve EE has flow rate=3; tunnels lead to valves FF, DD\n\
+      \Valve FF has flow rate=0; tunnels lead to valves EE, GG\n\
+      \Valve GG has flow rate=0; tunnels lead to valves FF, HH\n\
+      \Valve HH has flow rate=22; tunnel leads to valve GG\n\
+      \Valve II has flow rate=0; tunnels lead to valves AA, JJ\n\
+      \Valve JJ has flow rate=21; tunnel leads to valve II\n",
+      ("1651", "")
     )
   ]
 
@@ -379,5 +394,6 @@ fullTestsData =
     (12, ("490", "488")),
     (13, ("6656", "19716")),
     (14, ("592", "30367")),
-    (15, ("5181556", "12817603219131"))
+    (15, ("5181556", "12817603219131")),
+    (16, ("2330", ""))
   ]

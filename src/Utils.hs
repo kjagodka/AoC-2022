@@ -1,4 +1,4 @@
-module Utils (showResults, parseInt, pairMap, applyTuple, joinPair, readInputs, splitEvensOdds) where
+module Utils (showResults, parseInt, parseIntWithTail, pairMap, applyTuple, joinPair, readInputs, splitEvensOdds) where
 
 import Control.Exception (try)
 
@@ -16,6 +16,16 @@ pairMap f (a, b) = (f a, f b)
 
 applyTuple :: (t -> a, t -> b) -> t -> (a, b)
 applyTuple (f, g) val = (f val, g val)
+
+
+parseIntWithTail :: MonadFail m => String -> String -> m Int
+parseIntWithTail expected s = case reads s of
+  [(i, rest)] ->
+    if rest == expected
+      then return i
+      else fail $ "Could not parse: \"" ++ rest ++ "\" , expected: " ++ expected
+  _ -> fail $ "Could not parse integer: " ++ s
+
 
 parseInt :: MonadFail m => String -> m Int
 parseInt s = case reads s of

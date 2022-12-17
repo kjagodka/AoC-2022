@@ -16,9 +16,10 @@ import qualified Day13 (solve)
 import qualified Day14 (solve)
 import qualified Day15 (solve)
 import qualified Day16 (solve)
+import qualified Day17 (solve)
 
 solvedDays :: [Int]
-solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+solvedDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 solve :: MonadFail m => Int -> String -> m (String, String)
 solve 1 = Day01.solve
@@ -37,6 +38,7 @@ solve 13 = Day13.solve
 solve 14 = Day14.solve
 solve 15 = Day15.solve
 solve 16 = Day16.solve
+solve 17 = Day17.solve
 solve n = \_ -> fail $ "Tried to run solution of day: " ++ show n ++ "which isn't implementded"
 
 examplesTestData :: [(Int, String, (String, String))]
@@ -365,7 +367,10 @@ examplesTestData =
       \Valve II has flow rate=0; tunnels lead to valves AA, JJ\n\
       \Valve JJ has flow rate=21; tunnel leads to valve II\n",
       ("1651", "1707")
-    )
+    ),
+    ( 17,
+      ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>\n",
+      ("3068", ""))
   ]
 
 fullTestsData :: [(Int, (String, String))]

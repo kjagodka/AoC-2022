@@ -1,7 +1,7 @@
 module Day17 (solve) where
 
 import qualified Data.Set as Set
-import Utils (pairMap, applyTuple)
+import Utils (applyTuple, pairMap)
 
 type Coords = (Int, Int) -- (height, horizontal for proper ordering)
 
@@ -74,4 +74,4 @@ part1 :: [Wind] -> Int
 part1 winds = boardHeight $ dropPieces Set.empty tetrisPieces winds 2022
 
 solve :: MonadFail m => String -> m (String, String)
-solve input = pairMap show . applyTuple (part1, part1) <$> parse input
+solve input = applyTuple (show . part1, const "not solved") <$> parse input
